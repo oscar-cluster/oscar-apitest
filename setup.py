@@ -38,7 +38,7 @@ if not os.path.__dict__.has_key('sep'):
 #
 #####
 __author__   = "William McLendon"
-__version__  = "1.0"
+__version__  = "1.0.2"
 
 #####
 #

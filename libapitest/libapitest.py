@@ -32,7 +32,7 @@ various APItest modules.
 # INCLUDED MODULES
 #=============================================================================
 import re
-import md5
+import hashlib
 import string
 import time
 from exceptions import Exception
@@ -92,7 +92,7 @@ def logMessage(msgClass, msg):
 #--------------------------------------
 def hexdigest(fname):
     """ Load a file and return an md5 digest. """
-    md5obj = md5.new()
+    md5obj = hashlib.md5()
     try:
         f = file(fname,'rb')
     except:

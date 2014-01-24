@@ -20,12 +20,12 @@
 #######################################################################
 
 #
-#  $Id: apitest,v 1.46 2005/08/23 17:09:26 wcmclen Exp $
+#  $Id: apitest,v 1.47 2013/11/28 18:06:35 olahaye74 Exp $
 #
 
-__version__ = "1.0.0"
+__version__ = "1.0.2"
 __author__  = "William McLendon"
-__revision__= "$Id: apitest,v 1.46 2005/08/23 17:09:26 wcmclen Exp $"
+__revision__= "$Id: apitest,v 1.47 2013/11/28 18:06:35 olahaye74 Exp $"
 
 #
 # Import Message functions...

@@ -1,0 +1,9 @@
+1.0.2:
+    * Fix md5 warning by using hashlib.
+    * Update version tag to 1.0.2
+
+1.0.1:
+    * Fix Python ElementTree issue (now part of pyton base).
+
+1.0.0:
+    * Initial import into OSCAR svn.

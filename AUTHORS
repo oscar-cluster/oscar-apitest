@@ -1,0 +1,13 @@
+apitest is part of the OSCAR project.
+
+It has been originaly developped at Sandia university
+as a stand alone project by:
+William C. McLendon III <wcmclen@sandia.gov>
+Ron A. Oldfield
+
+There were no updates since 2005, and William gave the
+authorization to fork the code into OSCAR on Jan 8, 2014.
+
+Current Maintainers:
+Olivier Lahaye <olivier.lahaye@cea.fr>
+DongInn KIM <dikim@cs.indiana.edu>
