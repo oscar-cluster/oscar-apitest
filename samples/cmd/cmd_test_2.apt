@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--
+  #############################################################################
+  #
+  #     This Cplant(TM) source code is the property of Sandia National
+  #     Laboratories.
+  #
+  #     This Cplant(TM) source code is copyrighted by Sandia National
+  #     Laboratories.
+  #
+  #     The redistribution of this Cplant(TM) source code is subject to the
+  #     terms of the GNU Lesser General Public License
+  #     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+  #
+  #     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+  #     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+  #     license for use of this work by or on behalf of the US Government.
+  #     Export of this program may require a license from the United States
+  #     Government.
+  #
+  #############################################################################
+  -->
+<testDef>
+
+  <info>Sample command test</info>
+  
+  <shortDescription>Command Line Test #2</shortDescription>
+
+  <test type="cmd" match="YES">
+  
+    <command interpreter="/bin/ksh" wdir="/tmp">ls</command>
+
+    <input name="argument" format="literal">-l</input>
+    <input name="argument" format="literal">-t</input>
+
+    <output name="stdout" format="regexp">.*</output>
+    <output name="stderr" format="literal">123</output>  <!-- fail on this --> 
+    <output name="status" format="literal">0</output>
+
+  </test>
+
+</testDef>
+
+<!-- EOF -->

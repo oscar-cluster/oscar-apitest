@@ -1,0 +1,468 @@
+#!/usr/bin/env python
+#######################################################################
+#
+#     This Cplant(TM) source code is the property of Sandia National
+#     Laboratories.
+#
+#     This Cplant(TM) source code is copyrighted by Sandia National
+#     Laboratories.
+#
+#     The redistribution of this Cplant(TM) source code is subject to the
+#     terms of the GNU Lesser General Public License
+#     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+#
+#     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+#     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+#     license for use of this work by or on behalf of the US Government.
+#     Export of this program may require a license from the United States
+#     Government.
+#
+#######################################################################
+
+#
+#  $Id: apitest,v 1.46 2005/08/23 17:09:26 wcmclen Exp $
+#
+
+__version__ = "1.0.0"
+__author__  = "William McLendon"
+__revision__= "$Id: apitest,v 1.46 2005/08/23 17:09:26 wcmclen Exp $"
+
+#
+# Import Message functions...
+#
+def check_module_requirements():
+    zope_interface = True
+    twisted_core   = True
+    twisted_web    = True
+    elementtree    = True
+    do_exit        = False
+
+#    try:
+#        from zope.interface import Interface
+#        del Interface
+#    except ImportError:
+#        zope_interface = False
+#        do_exit = True
+#        print "Missing python module 'ZopeInterface' : (http://zope.org/Products/ZopeInterface)"
+
+
+    try:
+        from twisted.internet import reactor
+        del reactor
+        from twisted.python import usage
+        del usage
+    except ImportError:
+        twisted_core = False
+        do_exit = True
+        print "Missing python module 'Twisted'       : (http://www.twistedmatrix.com)"
+
+    try:
+        from twisted.web import server
+        del server
+    except ImportError:
+        twisted_web = False
+        do_exit = True
+        print "Missing python module 'TwistedWeb'    : (http://www.twistedmatrix.com)"
+        
+    try:
+        from elementtree import ElementTree
+        del ElementTree
+    except:
+        elementtree = False
+        do_exit = True
+        print "Missing python module 'ElementTree'   : (http://www.effbot.org)"
+
+    if do_exit:
+        print "\nPlease obtain and install the missing python modules\n"
+        import sys
+        sys.exit(1)
+
+check_module_requirements()
+
+#
+# Import module dependencies
+#
+import re
+import sys
+import os.path
+from os.path import normpath
+import webbrowser
+from twisted.internet import reactor
+from twisted.python import usage,threadable
+from twisted.web import server, resource
+from libapitest import jobManager,imageHandler,libdebug
+from libapitest import httpHandler_css,libapitest
+from libapitest import stylesheets
+
+
+#==========================================================================
+# command line options classes
+#==========================================================================
+class httpdOptions(usage.Options):
+    optParameters = [
+        ["host",     "h", "localhost", "Host Name URL."],
+        ["port",     "p", "2112",      "Port Number."],
+        ["iroot",    "i", "./",        "Input root."],
+        #["timeout","t", "-1",     "Kills server after <n> seconds."],
+        #["oroot",  "o", "./output",  "Output root."],
+    ]
+    optFlags = [
+        ["viewonly", "w", "View only (Cannot run tests via GUI)"],
+        ["nocss",   "C",  "Compatibility: No CSS"],
+    ]
+
+class Options(usage.Options):
+    subCommands = [
+        ["httpd", None, httpdOptions, "Run HTTPD servlet."],
+    ]
+    optFlags = [
+        ["verbose",   "v", "Verbose Mode"],
+        ["debug",     "d", "Debug Mode"],
+        ["transient", "T", "Transient Mode (output NOT saved)"],
+        ["sqldb", "D", "Use SQL Database"],
+        ["sqlreset", None, "Reset the SQL database tables"],
+    ]
+    optParameters = [
+        ["file",   "f", None,       "Input File"],
+        ["oroot",  "o", "./output", "Output Root"],
+        ["timeout","t", "-1",    "Kills apitest after <n> seconds."],
+        ["sqlpw",  "P", "",         "SQL Database PW"],
+    ]
+
+
+#==========================================================================
+# class APItest
+#==========================================================================
+class APItest(libdebug.debuggable):
+    """ The main APItest class ... this starts everything. """
+    timeout = -1
+
+    # ----------------------------------------    
+    def __init__(self, options):
+        self.options = options
+        self.db = None
+
+    # ----------------------------------------
+    def start(self):
+        """ Start up APItest.  This is the entry point to run APItest.""" 
+        self.start_common()
+        if self.options['debug']:
+            self.debug_on()
+
+        # Start up apitest
+        if self.options.subCommand and self.options.subCommand=="httpd":
+            self.options.subOptions["transient"] = self.options["transient"]
+            self.options.subOptions["timeout"]   = self.options["timeout"]
+            self.options.subOptions["debug"]     = self.options["debug"]
+            self.options.subOptions["verbose"]   = self.options["verbose"]
+            self.options.subOptions["oroot"]     = self.options["oroot"]
+            self.options.subOptions["file"]      = self.options["file"]
+            self.start_http()
+        else:
+            self.start_cmdLine()
+
+
+    # ----------------------------------------
+    def start_db(self):
+        """ Connect with MySQL database. """
+        dbOk = True
+        from libapitest.db_mysql import apitestdb
+        self.db = apitestdb()
+        self.db.Initialize(host="localhost",
+                           user="apitest",
+                           db="apitest")
+        self.db.Connect( self.options['sqlpw'] )
+        self.options['sqlpw'] = len(self.options['sqlpw'])*"*" 
+
+        ## Delete and recreate the DB tables if instructed to.
+        if self.options['sqlreset']:
+            self.db.tblDrop_runs()
+            self.db.tblDrop_results()
+            self.db.tblDrop_deps()
+            self.db.tblDrop_userdata()
+            self.db.tblDrop_resultdata()
+            self.db.tblCreate_runs()
+            self.db.tblCreate_results()
+            self.db.tblCreate_deps()
+            self.db.tblCreate_userdata()
+            self.db.tblCreate_resultdata()
+        
+        return True
+
+
+    # ----------------------------------------
+    def reset_db(self):
+        """ Deletes and recreates the database tables. """
+        if self.db != None:
+            db.Connect(passwd="balls")
+            db.tblDrop_runs()
+            db.tblDrop_results()
+            db.tblCreate_runs()
+            db.tblCreate_results()
+        return True
+        
+            
+    # ----------------------------------------
+    def start_common(self):
+        """ Start up common functions. """
+        # set up the whiteboard
+        self.WB = libapitest.whiteboard()
+
+        # set up database stuff...
+        if self.options and self.options["sqldb"]:
+            self.start_db()
+        
+        # Start up the job manager poller...
+        self.jobMan = jobManager.jobManager()
+        self.jobMan.Initialize(self.options, self.db)
+        self.jobMan.WB = self.WB
+        self.WB.jobMan = self.jobMan
+        if self.options['debug']: 
+            self.jobMan.debug_on()
+        self.jobMan.start()
+
+        # If we can't write to the --output-- directory, we should set the
+        # transient option on.
+        if self.options["transient"] == 0:
+            thePath = self.options["oroot"]
+            theFile = ".apitest"
+            theString = " This file created by APItest\n"
+            oFile = os.path.abspath( thePath+os.path.sep+theFile )
+            oFile = os.path.normpath( oFile )
+
+            ## Create the output root directory
+            try:
+                os.makedirs(thePath)
+            except:
+                pass
+                
+            ## If we can't access the output root, set TRANSIENT mode on.
+            if not os.access(thePath,os.F_OK|os.R_OK|os.W_OK|os.X_OK):
+                print "[ERROR]\tUnable to access `%s/`."%(os.path.abspath(thePath))
+                print "[ERROR]\tSetting transient mode."
+                self.options["transient"] = 1
+                if self.options.has_key("subOptions"):
+                    self.options.subOptions["transient"] = self.options["transient"]
+
+        # shutdown the reactor (debugging) after an hour
+        timeout= int(self.options['timeout'])
+        if timeout>0:
+            reactor.callLater(timeout, self.stop)
+
+
+    # ----------------------------------------
+    def start_cmdLine(self):
+        """ Start up the command-line interface handling stuff. """
+        ## print "options['file'] =", self.options['file']
+        
+        self.options["cmdLine"] = True
+        
+        if self.options.has_key('file'):
+            
+            if self.options['file'] == None:
+                ## Print out options if no command line is given.
+                #print "..", self.options.__dict__
+                pass
+            
+            elif not os.path.exists(self.options["file"]):
+                errStr = 'ERROR'
+                errStr = libapitest.ANSIstring('red','ERROR')
+                print libapitest.logMessage(errStr, \
+                    'File "%s" does not exist!'%(options['file']) )
+                
+            else:
+                # clear the work list & reset running flag.
+                self.WB.clear()
+                self.WB.running[0] = True
+                runID = self.WB.TD.newRun()
+                
+                # Create a new run in MySQL Dababase
+                if self.options and self.options["sqldb"]:
+                    self.db_runid = self.db.create_new_run()
+                
+                # generate / create output directories
+                self.WB.currentORoot = [self.options["oroot"]]
+                if(self.options["transient"]==0):
+                    if not libapitest.makeOutputDir(self.WB, runID):
+                        self.options["transient"]=1
+                        
+                testRE = re.compile('.*(\.apt)$')
+                batchRE= re.compile('.*(\.apb)$')
+                if( testRE.match(self.options['file']) or \
+                            batchRE.match(self.options['file'])):
+                    
+                    self.WB.workList.put(self.options['file'])
+                    
+                # start up the reactor
+                reactor.run()
+                
+
+    # ----------------------------------------
+    def stop(self):
+        """ Shut down the reactor (and thus APItest). """
+        reactor.stop()
+
+
+    # ----------------------------------------
+    def start_http(self):
+        """ Start up the HTTP Server for APItest when in GUI mode. """
+
+        self.options['cmdLine'] = False
+        self.options.subOptions['cmdLine'] = False
+
+        ## Print out message with instructions on host/port
+        host = self.options.subOptions['host']
+        port = self.options.subOptions['port']
+        theURL = "http://%s:%s/"%(host,port)
+        print "Starting the APItest server"
+        print ""
+        print "Please set your web browser to the following URL:"
+        print ""
+        print "\t%s"%(theURL)
+        print ""
+        ## webbrowser.open(theURL)
+
+        ## set up the HTTP root stuff
+        root  = httpHandler_css.HTTProot()
+        
+        ## CSS stylesheets
+        www_css_page = stylesheets.www_css_page()
+        www_css_page.Initialize(self.options.subOptions)
+        root.putChild('page.css',www_css_page)
+
+        www_css_tbl_output = stylesheets.www_css_tbl_output()
+        www_css_tbl_output.Initialize(self.options.subOptions)
+        root.putChild('tbl_output.css',www_css_tbl_output)
+            
+        www_css_tbl_listing = stylesheets.www_css_tbl_listing()
+        www_css_tbl_listing.Initialize(self.options.subOptions)
+        root.putChild('tbl_listing.css',www_css_tbl_listing)
+            
+        www_css_tbl_results = stylesheets.www_css_tbl_results()
+        www_css_tbl_results.Initialize(self.options.subOptions)
+        root.putChild('tbl_results.css',www_css_tbl_results)
+
+        www_css_nav = stylesheets.www_css_nav()
+        www_css_nav.Initialize(self.options.subOptions)
+        root.putChild('nav.css',www_css_nav)
+        
+        ## about.html    (CSS)
+        www_about_html = httpHandler_css.www_about_html()
+        www_about_html.Initialize(self.options.subOptions)
+        root.putChild('about', www_about_html)
+        
+        ## admin.html    (CSS)
+        www_admin_html = httpHandler_css.www_admin_html()
+        www_admin_html.Initialize(self.options.subOptions)
+        root.putChild('admin', www_admin_html)
+
+        ## shutdown handler
+        wwwShutdown = httpHandler_css.wwwShutdown()
+        root.putChild('shutdown',wwwShutdown)
+        
+        ## Set up offline result browser
+        www_saved_html = httpHandler_css.www_saved_html()
+        www_saved_html.Initialize(self.options.subOptions)
+        root.putChild('saved',www_saved_html)
+
+        ## Add the handlers for image rendering in img/ directory
+        imgDir = imageHandler.img()
+        root.putChild('img',imgDir)
+        #imgDir.putChild('tee25.png',   imageHandler.img_tee25_png()  )
+        #imgDir.putChild('angle25.png', imageHandler.img_angle25_png())
+        #imgDir.putChild('hline25.png', imageHandler.img_hline25_png())
+        #imgDir.putChild('vline25.png', imageHandler.img_vline25_png())
+        #imgDir.putChild('tpixel.gif',  imageHandler.img_tpixel_gif() )
+        #imgDir.putChild('snlbird_50.gif', imageHandler.img_snlbird_50_gif())
+        #imgDir.putChild('tab.gif',        imageHandler.img_tab_gif()       )
+        #imgDir.putChild('tab-active.gif', imageHandler.img_tab_active_gif())
+
+        if not self.options.subOptions['viewonly']:
+
+            ## set up index page.
+            www_main_html = httpHandler_css.www_main_html()
+            www_main_html.Initialize(self.options.subOptions)
+            root.putChild('',www_main_html)
+            root.putChild('index.htm', www_main_html)
+            root.putChild('index.html',www_main_html)
+            root.putChild('main.html', www_main_html)
+
+            ## set up www_process_html
+            www_process_html = httpHandler_css.www_process_html()
+            www_process_html.WB = self.WB
+            www_process_html.Initialize(self.options.subOptions, self.db)
+            root.putChild('process',www_process_html)
+
+            ## set up XML results viewer (temp?)
+            wwwShowXML = httpHandler_css.wwwShowXML()
+            wwwShowXML.Initialize(self.options.subOptions)
+            wwwShowXML.WB = self.WB
+            root.putChild('showxml',wwwShowXML)
+
+            ## running.html (CSS)
+            www_running_html = httpHandler_css.www_running_html()
+            www_running_html.Initialize(self.options.subOptions)
+            www_running_html.WB = self.WB
+            root.putChild('running', www_running_html)
+
+            ## session.html (CSS)
+            www_session_html = httpHandler_css.www_session_html()
+            www_session_html.Initialize(self.options.subOptions)
+            www_session_html.WB = self.WB
+            root.putChild('session', www_session_html)
+            
+            ## Test File XML Displayer
+            wwwShowTestFile = httpHandler_css.wwwShowTestFileXML()
+            wwwShowTestFile.Initialize(self.options.subOptions)
+            root.putChild('showtestxml',wwwShowTestFile)
+
+            ## Test File Summary Displayer
+            wwwShowTestFileSummary = httpHandler_css.wwwShowTestFileSummary()
+            wwwShowTestFileSummary.Initialize(self.options.subOptions)
+            root.putChild('showtestsummary',wwwShowTestFileSummary)
+        else:
+            ## Set up view-only mode 
+            root.putChild('',www_saved_html)
+            root.putChild('index.htm',www_saved_html)
+            root.putChild('index.html',www_saved_html)
+            root.putChild('running',www_saved_html)
+            root.putChild('session',www_saved_html)
+
+        ## Turn on debugging if -d or --debug is in the command line
+        if self.options.subOptions['debug']:
+            www_main_html.debug_on()
+            www_session_html.debug_on()
+            www_running_html.debug_on()
+            www_saved_html.debug_on()
+            www_process_html.debug_on()
+
+        ## Twisted reactor setup for webserver
+        site = server.Site(root)
+        reactor.listenTCP( int(self.options.subOptions['port']),site )
+        
+        ## start up the reactor
+        reactor.run()
+
+
+# -------------------------------------------------------------------------
+# main entry point.
+# -------------------------------------------------------------------------
+if __name__ == '__main__':
+        
+    # PROCESS THE COMMAND LINE OPTIONS
+    options = Options()
+    try:
+        options.parseOptions()
+    except usage.UsageError,errortext:
+        print '%s: %s' % (sys.argv[0], errortext)
+        print '%s: Try --help for usage details.' % (sys.argv[0])
+        sys.exit(1)
+
+    apitest = APItest(options)
+    apitest.timeout = 3600
+    apitest.start()
+
+    
+
+
+# EOF

@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+  <!--
+  #############################################################################
+  #
+  #     This Cplant(TM) source code is the property of Sandia National
+  #     Laboratories.
+  #
+  #     This Cplant(TM) source code is copyrighted by Sandia National
+  #     Laboratories.
+  #
+  #     The redistribution of this Cplant(TM) source code is subject to the
+  #     terms of the GNU Lesser General Public License
+  #     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+  #
+  #     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+  #     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+  #     license for use of this work by or on behalf of the US Government.
+  #     Export of this program may require a license from the United States
+  #     Government.
+  #
+  #############################################################################
+  -->
+
+<testDef>
+
+<info>
+Sample install test script.  Checks the default install
+locations for the RPM install:
+
+/usr/lib/python2.2/site-packages/libapitest/*.py
+/usr/local/apitest/apitest
+
+The embedded script will pass given the following conditions:
+STDOUT is the string PASS
+STDERR is empty
+STATUS is 0
+</info>
+
+<shortDescription>Verify APItest is installed</shortDescription>
+
+
+<test type="script">
+
+
+<!-- command -->
+<command interpreter="python">
+import sys, os, os.path
+
+if not os.path.__dict__.has_key('sep'):
+  os.path.sep='/'
+
+
+(rel1,rel2,rel3,rellvl, rel4) = sys.version_info
+version = "%d.%d"%(rel1,rel2)
+
+spD = "/usr/lib/python%s/site-packages/libapitest"%(version)
+spF = [ "__init__.py", "digraph.py","htmltools.py", \
+        "httpHandler_css.py","imageHandler.py","jobManager.py",\
+        "libapitest.py","libdebug.py","systools.py",\
+        "testHandler.py","twistedTools.py" ]
+binD = "/usr/bin/"
+binF = ["apitest"]
+
+passed = True
+
+if os.path.exists(spD):
+  for f in spF:
+    if not os.path.exists(spD+os.path.sep+f):
+      print "could not find '%s'"%(spD+os.path.sep+f)
+      passed = False
+else:
+  print "path not found to '%s'"%(spD);
+  passed = False
+
+if os.path.exists(binD):
+  for f in binF:
+    if not os.path.exists(binD+os.path.sep+f):
+      print "file not found: '%s'"%(binD+os.path.sep+f)
+      passed = False
+else:
+  print "path not found to '%s'"%(binD)
+  passed = False
+
+if passed == True:  
+  print "PASS"
+else:
+  print "FAIL"
+
+</command>
+
+
+<!-- EXPECTED OUTPUT -->
+<output name="stdout" format="regexp">^PASS$</output>
+<output name="stderr" />
+<output name="status">0</output>
+
+</test>
+</testDef>

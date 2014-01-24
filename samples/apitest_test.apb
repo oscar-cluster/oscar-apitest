@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--
+  #############################################################################
+  #
+  #     This Cplant(TM) source code is the property of Sandia National
+  #     Laboratories.
+  #
+  #     This Cplant(TM) source code is copyrighted by Sandia National
+  #     Laboratories.
+  #
+  #     The redistribution of this Cplant(TM) source code is subject to the
+  #     terms of the GNU Lesser General Public License
+  #     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+  #
+  #     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+  #     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+  #     license for use of this work by or on behalf of the US Government.
+  #     Export of this program may require a license from the United States
+  #     Government.
+  #
+  #############################################################################
+  -->
+<!-- apitest.v2 batch script working idea. -->
+<testBatch>
+
+<info>Run the test suite for APItest</info>
+
+<shortDescription>&lt;font color=#660033&gt;Run All APItest Tests&lt;/font&gt;</shortDescription>
+
+<test name="install_test.apt" mustPass="false"/>
+<test name="batch/batch.apb"/>
+<test name="timeout/timeout.apb"/>    
+<test name="script/script.apb"/>
+<test name="cmd/cmd.apb"/>
+<test name="io/io.apb"/>
+<test name="envvar/envvar.apb"/>
+
+<dep parent="install_test.apt" child="batch/batch.apb" status="ANY"/>
+<dep parent="install_test.apt" child="timeout/timeout.apb" status="ANY"/>
+<dep parent="install_test.apt" child="script/script.apb" status="ANY"/>
+<dep parent="install_test.apt" child="cmd/cmd.apb" status="ANY"/>
+<dep parent="install_test.apt" child="io/io.apb" status="ANY"/>
+<dep parent="install_test.apt" child="envvar/envvar.apb" status="ANY"/>
+
+</testBatch>
+
+<!--EOF-->

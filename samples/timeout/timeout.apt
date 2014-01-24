@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--
+  #############################################################################
+  #
+  #     This Cplant(TM) source code is the property of Sandia National
+  #     Laboratories.
+  #
+  #     This Cplant(TM) source code is copyrighted by Sandia National
+  #     Laboratories.
+  #
+  #     The redistribution of this Cplant(TM) source code is subject to the
+  #     terms of the GNU Lesser General Public License
+  #     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+  #
+  #     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+  #     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+  #     license for use of this work by or on behalf of the US Government.
+  #     Export of this program may require a license from the United States
+  #     Government.
+  #
+  #############################################################################
+  -->
+<testDef>
+
+  <info>Timeout test :: tests to see if the timeout option works.</info>
+
+  <shortDescription>Timeout Test #1</shortDescription>
+
+  <test name="timestamp1"
+	type="script"
+        timeout="2.2">
+  
+    <command interpreter="/bin/bash" wdir="/tmp">
+for x in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+do
+  echo "timeout_test :${x}: `date`"
+  sleep 1
+done
+
+    </command>
+
+    <output name="stdout" format="regexp">.*timeout.*</output>
+    <output name="stderr" format="literal"></output>
+    <output name="status" format="literal">0</output>
+
+  </test>
+
+</testDef>
+
+<!-- EOF -->
+

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<testDef>
+
+  <info>
+	This test is designed to test APItest's ability to handle scripts
+	that generate a lot of stdout and stderr output.
+	This test will mismatch stdout, but we're specifying that minPctMatch
+	and maxPctMatch must be 0%, so it should PASS if the matching failed.
+  </info>
+
+  <test type="script"
+        minPctMatch="0"
+        maxPctMatch="0"
+        onMismatch="CONTINUE">
+  
+    <command interpreter="python" wdir="/tmp">
+#!/usr/bin/env python
+import os
+import sys
+for i in range(100):
+    print >>sys.stderr, 10*'this is stderr\n'
+    print >>sys.stdout, 10*'this is stdout\n'
+    </command>
+
+
+    <output name="stdout" format="regexp">(^this is stdout[\n]{1,2}){1001}</output>
+    <output name="stderr" format="regexp">(^this is stderr[\n]{1,2}){1000}</output>
+    <output name="status" format="literal">0</output>
+
+  </test>
+
+</testDef>
+
+<!-- EOF -->

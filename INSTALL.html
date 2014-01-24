@@ -1,0 +1,123 @@
+  <!--
+  #############################################################################
+  #
+  #     This Cplant(TM) source code is the property of Sandia National
+  #     Laboratories.
+  #
+  #     This Cplant(TM) source code is copyrighted by Sandia National
+  #     Laboratories.
+  #
+  #     The redistribution of this Cplant(TM) source code is subject to the
+  #     terms of the GNU Lesser General Public License
+  #     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+  #
+  #     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+  #     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+  #     license for use of this work by or on behalf of the US Government.
+  #     Export of this program may require a license from the United States
+  #     Government.
+  #
+  #############################################################################
+  -->
+
+<html>
+<head>
+<style type="text/css">
+hr.hr1 {
+  border: 0;
+  width: 100%;
+  background-color: #0099CC;
+  color: #0099CC;
+  height: 5px;
+}
+hr.hr2 {
+  border: 0;
+  width: 50%;
+  background-color: #0099CC;
+  color: #0099CC;
+  height: 2px;
+}
+CT {
+  font-style: sans-serif;
+  font-size: 50%;
+  color: green;
+}
+
+</style>
+</head>
+<body>
+<H1>APItest Installation Instructions</H1>
+
+<H2>Required Prerequisites for APItest</H2>
+APItest depends on a few freely available Python packages and utilities
+to run.  The following table provides the list and links for downloading.
+<BR>
+
+<TABLE WIDTH=70% BORDER=1 CELLSPACING=0>
+<TR>
+    <TH>Package</TH>
+    <TH>URL</TH>
+</TR>
+<TR>
+    <TD>Python 2.2 or higher</TD>
+    <TD><A HREF="http://www.python.org">http://www.python.org</A></TD>
+</TR>
+<TR>
+    <TD>ElementTree</TD>
+    <TD><A HREF="http://effbot.org/downloads/#elementtree">http://www.effbot.org/downloads</A></TD>
+</TR>
+<TR>
+    <TD>Twisted 2.0</TD>
+    <TD><A HREF="http://www.twistedmatrix.com/products/download">http://www.twistedmatrix.com</A></TD>
+</TR>
+<TR>
+    <TD>TwistedWeb</TD>
+    <TD><A HREF="http://www.twistedmatrix.com/products/download">http://www.twistedmatrix.com</A></TD>
+</TR>
+<TR>
+    <TD>ZopeInterfaces</TD>
+    <TD><A HREF="http://www.zope.org/Products/ZopeInterfaces">http://www.zope.org/Products/ZopeInterfaces</A></TD>
+</TR>
+<caption>Required packages for APItest</caption>
+</TABLE>
+
+<H2>Building and Installing</H2>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+<TR>
+<TD WIDTH=50>&nbsp;</TD>
+<TD><PRE>$ make install PREFIX=<I>installation path</I></PRE></TD>
+</TR>
+</TABLE>
+
+<H2>Uninstallation Instructions</H2>
+Uninstalling APItest is performed by using the Makefile script with the same
+<I>PREFIX</I> path as was used during installation.<BR>
+<BR>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+<TR>
+<TD WIDTH=50>&nbsp;</TD>
+<TD><PRE>$ make uninstall PREFIX=<I>installation path</I></PRE></TD>
+<TR>
+</TABLE>
+
+
+<H2>Executing APItest</H2>
+After installation, you should make sure that the installation directory is
+in your search path.  Then you can run: <BR>
+<BR>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+<TR><TD WIDTH=50>&nbsp;</TD><TD>
+<PRE>
+$ apitest httpd
+</PRE>
+</TD></TR></TABLE>
+<BR>
+from anywhere and APItest will start up a web-server listening to 
+<A HREF="http://localhost:2112/">http://localhost:2112/</A>.
+
+A full listing of allowable commands is listed in the APItest userguide,
+  is also available by typing <B>--help</B> into the command line.
+
+
+
+

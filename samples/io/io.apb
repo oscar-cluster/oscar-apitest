@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testBatch>
+    <info>io_large_miss_*.apt are supposed to fail.</info>
+    <shortDescription>Run IO Tests</shortDescription>
+    <test name="io_large_matchall.apt"/>
+    <test name="io_large_miss_stdout.apt" mustPass="false"/>
+    <test name="io_large_miss_stderr.apt" mustPass="false"/>
+</testBatch>

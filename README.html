@@ -1,0 +1,112 @@
+  <!--
+  #############################################################################
+  #
+  #     This Cplant(TM) source code is the property of Sandia National
+  #     Laboratories.
+  #
+  #     This Cplant(TM) source code is copyrighted by Sandia National
+  #     Laboratories.
+  #
+  #     The redistribution of this Cplant(TM) source code is subject to the
+  #     terms of the GNU Lesser General Public License
+  #     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+  #
+  #     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+  #     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+  #     license for use of this work by or on behalf of the US Government.
+  #     Export of this program may require a license from the United States
+  #     Government.
+  #
+  #############################################################################
+  -->
+
+<html>
+<head>
+<style type="text/css">
+hr.hr1 {
+  border: 0;
+  width: 100%;
+  background-color: #0099CC;
+  color: #0099CC;
+  height: 5px;
+}
+hr.hr2 {
+  border: 0;
+  width: 50%;
+  background-color: #0099CC;
+  color: #0099CC;
+  height: 2px;
+}
+
+</style>
+</head>
+<body>
+<h1>APItest README</h1>
+
+<H2>Installing APItest</H2>
+Please refer to <A HREF="INSTALL.html">INSTALL.html</A> for
+installation instructions.
+
+
+<h2>Running APItest</h2>
+This code is currently in development, but we do have the shell
+and command tests working.<BR>
+<BR>
+To run apitest type the following:<BR>
+<BR>
+<B>$>python apitest httpd</B><BR>
+<BR>
+This will start apitest as an HTTP daemon on your local machine.  
+<BR>
+To use apitest, direct a web browser to:<BR>
+<BR>
+<A HREF="http://localhost:2112/index.html">http://localhost:2112/index.html</A>
+
+<h2>Installation</h2>
+APItest can be installed using the Python setup script that is provided.<BR>
+<BR>
+<tt>$python setup.py install</tt><br>
+<br>
+should be sufficient to install APItest onto a unix machine.<br>
+<br>
+We also have an RPM distribution available.
+
+
+<h2>Command Line Help</h2>
+<TABLE width=70% border=1 cellspacing=0>
+<TR>
+    <TH>Command</TH>
+    <TH>Description</TH>
+</TR>
+<TR>
+    <TD>apitest.py --help</TD>
+    <TD>Prints out a list of command line options.</TD>
+</TR>
+<TR>
+    <TD>apitest.py httpd --help</TD>
+    <TD>Prints out a list of httpd command line options.</TD>
+</TR>
+<CAPTION>Examples of how to get command-line help.</CAPTION>
+</TABLE>
+
+
+<h2>Directories</h2>
+The destination directories of the default APItest installation are:
+<UL TYPE=CIRCLE>
+  <LI><B>/usr/bin</B> - location of the <I>apitest</I> execution script.
+  <LI><B>/usr/share/doc/apitest</B>  - Documentation &amp; example scripts.
+  <LI><B>/usr/lib/python{py_vers}/site-packages/libapitest</B> - libapitest
+  <LI><A HREF="file:///usr/share/doc/apitest/APItest-userguide-1_0.pdf">User Guide (PDF)</A>
+</UL>
+
+<BR>
+
+<!-- Questions and Comments Section ================================ -->
+<HR class="hr1"/>
+<h2>Questions &amp; Comments</h2>
+
+Help make APItest better... please send questions and comments
+to <A HREF=="mailto::wcmclen@sandia.gov">William McLendon</A>
+
+</body>
+</html>

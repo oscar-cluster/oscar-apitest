@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--
+  #############################################################################
+  #
+  #     This Cplant(TM) source code is the property of Sandia National
+  #     Laboratories.
+  #
+  #     This Cplant(TM) source code is copyrighted by Sandia National
+  #     Laboratories.
+  #
+  #     The redistribution of this Cplant(TM) source code is subject to the
+  #     terms of the GNU Lesser General Public License
+  #     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+  #
+  #     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+  #     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+  #     license for use of this work by or on behalf of the US Government.
+  #     Export of this program may require a license from the United States
+  #     Government.
+  #
+  #############################################################################
+  -->
+
+<testDef>
+
+  <info>
+  command line testing program, executes sdstat.
+  We want this test to PASS if the service directory is off.
+  That is, sdstat.py will exit with a status of 1 and print 
+  a message to stdout containing the string "Connection refused"
+  </info>
+
+  <test type="cmd">
+
+    <command interpreter="/bin/csh" wdir="/usr/sbin/">sdstat.py</command>
+
+    <output name="stdout" format="regexp">^.*Connection refused$</output>
+    <output name="stderr" format="literal"></output> 
+    <output name="status" format="literal">1</output>
+
+  </test>
+</testDef>
+<!-- EOF -->

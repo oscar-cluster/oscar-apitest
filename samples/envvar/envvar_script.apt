@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--
+  #############################################################################
+  #
+  #     This Cplant(TM) source code is the property of Sandia National
+  #     Laboratories.
+  #
+  #     This Cplant(TM) source code is copyrighted by Sandia National
+  #     Laboratories.
+  #
+  #     The redistribution of this Cplant(TM) source code is subject to the
+  #     terms of the GNU Lesser General Public License
+  #     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+  #
+  #     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+  #     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+  #     license for use of this work by or on behalf of the US Government.
+  #     Export of this program may require a license from the United States
+  #     Government.
+  #
+  #############################################################################
+  -->
+<testDef>
+
+  <info>
+  This script executes but adds some stuff to the environment.
+  NOTE: setting envvar OVERRIDES any inherited environment variables.
+  </info>
+
+  <test type="script">
+
+<command interpreter="/bin/csh">
+#!/bin/csh
+env
+</command>
+
+    <input name="envvar" format="literal" key="test_envvar_1">foo</input>
+    <input name="envvar" format="literal" key="test_envvar_2">foobar</input>
+
+    <output name="stdout" format="regexp">.*(test_envvar_\d=foo(bar)?\n.*){2}.*</output>
+    <output name="stderr" format="literal"></output> 
+    <output name="status" format="literal">0</output>
+
+  </test>
+
+</testDef>
+
+<!-- EOF -->

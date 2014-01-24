@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testBatch>
+    <info>Tests that try to set environment variables</info>
+    <shortDescription>Run Environment Variable Assignment Tests</shortDescription>
+    <test name="envvar_script.apt"/>
+    <test name="envvar_cmd.apt"/>
+</testBatch>
+
+<!-- EOF -->

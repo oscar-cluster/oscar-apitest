@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <!--
+  #############################################################################
+  #
+  #     This Cplant(TM) source code is the property of Sandia National
+  #     Laboratories.
+  #
+  #     This Cplant(TM) source code is copyrighted by Sandia National
+  #     Laboratories.
+  #
+  #     The redistribution of this Cplant(TM) source code is subject to the
+  #     terms of the GNU Lesser General Public License
+  #     (see cit/LGPL or http://www.gnu.org/licenses/lgpl.html)
+  #
+  #     Cplant(TM) Copyright 1998, 1999, 2000, 2001, 2002 Sandia Corporation.
+  #     Under the terms of Contract DE-AC04-94AL85000, there is a non-exclusive
+  #     license for use of this work by or on behalf of the US Government.
+  #     Export of this program may require a license from the United States
+  #     Government.
+  #
+  #############################################################################
+  -->
+
+<testBatch>
+
+    <info>
+    script_test_1 should fail its dependency.
+    cmd_test_2 will fail.
+    </info>
+
+    <shortDescription>Batch Test #6</shortDescription>
+
+    <test name="../script/script_test_1.apt" mustPass="false"/>
+    <test name="../cmd/cmd_test_2.apt" mustPass="false"/> 
+
+    <dep parent="../script/script_test_2.apt" 
+	 child="../script/script_test_1.apt" 
+	 status="PASS"/>
+	 
+    <dep parent="../cmd/cmd_test_1.apt"       
+         child="../cmd/cmd_test_2.apt"       
+	 status="PASS"/>
+	 
+    <dep parent="../cmd/cmd_test_2.apt"
+	 child="../script/script_test_2.apt"
+	 status="MUSTRUN"/>
+	 
+    <dep parent="../cmd/cmd_test_2.apt"
+	 child="../script/script_test_1.apt"
+	 status="ANY"/>
+    
+    <dep parent="../script/script_test_1.apt"
+         child="bTest_7.apb" 
+	 status="ANY"/>
+
+</testBatch>
+
+<!--EOF-->
