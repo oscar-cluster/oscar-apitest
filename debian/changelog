@@ -1,0 +1,18 @@
+apitest (1.0.2-1) hardy; urgency=low
+
+  * New upstream version for OSCAR.
+
+ -- Olivier Lahaye <olivier.lahaye@cea.fr>  Thu, 28 Nov 2013 18:0909 +0100
+
+apitest (1.0.1-1) hardy; urgency=low
+
+  * New upstream version for OSCAR.
+
+ -- Olivier Lahaye <olivier.lahaye@cea.fr>  Thu, 28 Nov 2013 16:53:23 +0100
+
+apitest (1.0.0-1) hardy; urgency=low
+
+  * New upstream version for OSCAR.
+
+ -- Geoffroy Vallee <valleegr@ornl.gov>  Sun, 21 Jun 2009 23:18:32 -0400
+
