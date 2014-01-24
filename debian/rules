@@ -54,7 +54,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/orm.
-	python setup.py install --no-compile --prefix=$(CURDIR)/debian/tmp/usr --install-lib=$(CURDIR)/debian/tmp/usr/lib/python$(PYTHON_VERSION)/site-packages
+	python setup.py install --no-compile --prefix=$(CURDIR)/debian/tmp/usr --install-lib=$(CURDIR)/debian/tmp/usr/lib/python$(PYTHON_VERSION)/dist-packages
 
 
 # Build architecture-independent files here.
