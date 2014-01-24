@@ -59,6 +59,7 @@ echo %{buildroot}
 
 %files
 %defattr(-,root,root)
+%doc AUTHORS ChangeLog doc/COPYING.LGPLv2.1
 %{python_sitelib}/*
 %{_docdir}/*
 %{_bindir}/*
