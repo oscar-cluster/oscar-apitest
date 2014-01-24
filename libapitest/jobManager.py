@@ -43,7 +43,7 @@ from twisted.internet import protocol
 from twisted.internet import reactor,defer
 
 # ElementTree modules
-from elementtree import ElementTree
+from xml.etree import ElementTree
 
 from xml.parsers.expat import ExpatError
 

@@ -36,7 +36,7 @@ import md5
 import string
 import time
 from exceptions import Exception
-from elementtree import ElementTree
+from xml.etree import ElementTree
 import twistedTools
 import libdebug
 import Queue

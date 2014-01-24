@@ -65,7 +65,7 @@ def check_module_requirements():
         print "Missing python module 'TwistedWeb'    : (http://www.twistedmatrix.com)"
         
     try:
-        from elementtree import ElementTree
+        from xml.etree import ElementTree
         del ElementTree
     except:
         elementtree = False

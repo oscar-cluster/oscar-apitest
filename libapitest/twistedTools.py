@@ -30,7 +30,7 @@ import systools
 import string
 from twisted.internet import protocol,reactor,defer
 from exceptions import Exception
-from elementtree import ElementTree
+from xml.etree import ElementTree
 
 
 #--------------------------------------------------------------------

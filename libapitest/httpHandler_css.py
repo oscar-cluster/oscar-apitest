@@ -27,7 +27,7 @@ from sys import exit
 from os import getcwd, makedirs
 from twisted.web import resource
 from twisted.internet import reactor
-from elementtree import ElementTree
+from xml.etree import ElementTree
 from xml.parsers.expat import ExpatError
 import stylesheets, htmltools, libapitest, libdebug
 from htmltools import genCheckBox,genHRuleTable,genSubmitButton,genSubmitTextButton
