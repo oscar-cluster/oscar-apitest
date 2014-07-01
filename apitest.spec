@@ -1,6 +1,6 @@
 %define name apitest
 %define version 1.0.2
-%define release 2
+%define release 3
 #define _unpackaged_files_terminate_build 0
 
 #{expand:%%define py_ver %(python -V 2>&1| awk '{print $2}')}
@@ -18,8 +18,10 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 # Architecture
 BuildArch: noarch
 
-Requires: python-twisted >= 1.3
-BuildRequires: python-twisted >= 1.3
+Requires: python-twisted-core >= 1.3
+Requires: python-twisted-web >= 1.3
+BuildRequires: python-twisted-core >= 1.3
+BuildRequires: python-twisted-web >= 1.3
 
 #%if 0%(echo %{?python_version}|tr '.' '0') < 206
 #Requires: python-elementtree
@@ -70,6 +72,10 @@ echo "cleaning $RPM_BUILD_ROOT"
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Tue Jul  1 2014    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.2-3
+- Finegrained Requirements regarding python-twisted (now only core and web are required).
+  This is needed to CentOS7-beta which has incomplete python-twisted.
+
 * Thu Nov 28 2013    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.2-2
 - New upstream version that fix deprecated md5 module warning.
 - Now requires python >= 2.6 (apitest-1.0.1+ doesn't work anymore with old python-elementtreee-1.2.6)
