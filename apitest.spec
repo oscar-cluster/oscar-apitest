@@ -9,7 +9,7 @@
 Summary: A test driver application. 
 Name: %{name}
 Version: %{version}
-Release: %{release}
+Release: %{release}%{?dist}
 License: LGPL
 Group: Development/Libraries
 Source: %{name}-%{version}.tar.gz
