@@ -40,8 +40,6 @@ A test driver application.
 echo "==========[ BUILD ]===================================="
 echo "python%{python3_version}"
 echo "buildroot=%{buildroot}"
-#define sitepackages %{_prefix}/%{_lib}/python%{py_libver}/site-packages
-#python%{py_libver} setup.py build
 
 
 %install
@@ -49,7 +47,7 @@ echo "==========[ INSTALL ]=================================="
 echo %{buildroot}
 #define doc_prefix /usr/share/doc/apitest
 %{__python3} setup.py install --no-compile --prefix=%{buildroot}%{_prefix}/ --install-lib=%{buildroot}%{python3_sitelib}
-###--install-data=%{buildroot}/%{doc_prefix}
+###--install-data=#{buildroot}/#{doc_prefix}
 
 
 %files
