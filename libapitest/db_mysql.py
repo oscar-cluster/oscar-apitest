@@ -26,7 +26,7 @@ Interface methods to MySQL database
 # $Id: db_mysql.py,v 1.4 2005/04/07 21:12:09 wcmclen Exp $
 #
 
-import libdebug
+from . import libdebug
 import MySQLdb
 
 # ========================================================================
@@ -98,7 +98,7 @@ class sqldb(libdebug.debuggable):
                                           passwd=passwd,
                                           db=self.dbname)
                 self.connected = True
-            except MySQLdb.Error, e:
+            except MySQLdb.Error as e:
                 self.printErrorMsg(e)
                 return False
         return True
@@ -109,7 +109,7 @@ class sqldb(libdebug.debuggable):
         if self.connected:
             try:
                 self.cursor = self.db.cursor()
-            except MySQLdb.Error, e:
+            except MySQLdb.Error as e:
                 self.printErrorMsg(e)
                 self.cursor = None
                 return None
@@ -123,7 +123,7 @@ class sqldb(libdebug.debuggable):
         try:
             self.cursor.close()
             self.cursor = None
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             self.printErrorMsg(e)
             return False
         return True
@@ -138,7 +138,7 @@ class sqldb(libdebug.debuggable):
         try:
             self.db.close()
             self.db = None
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             self.printErrorMsg(e)
             return False
         self.connected = False
@@ -154,7 +154,7 @@ class sqldb(libdebug.debuggable):
         cursor = self.getCursor()
         try:
             cursor.execute(query)
-        except MySQLdb.Error, e:
+        except MySQLdb.Error as e:
             self.printErrorMsg(e)
             return None
         return cursor

@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import libdebug
-import imageHandler
-import digraph
-import htmltools
-import systools
-import testHandler
-import twistedTools
-import libapitest
-import jobManager
-import httpHandler_css
-import stylesheets
+from . import libdebug
+from . import imageHandler
+from . import digraph
+from . import htmltools
+from . import systools
+from . import testHandler
+from . import twistedTools
+from . import libapitest
+from . import jobManager
+from . import httpHandler_css
+from . import stylesheets

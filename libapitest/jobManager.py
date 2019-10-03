@@ -28,15 +28,14 @@ Job Manager class
 import re
 import os
 import os.path
-import Queue
-import string
+import queue
 from time import sleep
 
 # APItest modules
-import libdebug
-import libapitest
-import testHandler
-import digraph
+from . import libdebug
+from . import libapitest
+from . import testHandler
+from . import digraph
 
 # Twisted modules
 from twisted.internet import protocol
@@ -48,7 +47,7 @@ from xml.etree import ElementTree
 from xml.parsers.expat import ExpatError
 
 # KLUDGE ALERT!
-if not os.path.__dict__.has_key('sep'): 
+if 'sep' not in os.path.__dict__: 
     os.path.sep = '/'
 
     
@@ -94,14 +93,14 @@ class jobManagerBase(libdebug.debuggable):
 
     def start(self):
         """ start up the poller """
-        self.printDebug("[->]\tjobManagerBase.start(%s)"%(`self`))
+        self.printDebug("[->]\tjobManagerBase.start(%s)"%(repr(self)))
         self._continue = True
         reactor.callLater(0, self.poll)
         self.printDebug("[<-]\tjobManagerBase.start()")
 
     def stop(self):
         """ shut down the poller """
-        self.printDebug("[->]\tjobManagerBase.stop(%s)"%(`self`))
+        self.printDebug("[->]\tjobManagerBase.stop(%s)"%(repr(self)))
         self._continue = False
         self.printDebug("[<-]\tjobManagerBase.stop()")
 
@@ -128,7 +127,7 @@ class jobManagerBase(libdebug.debuggable):
 
     def task_done(self,status):
         """ task returned """
-        self.printDebug("[->]\tjobManagerBase.task_done(%s)"%(`status`))
+        self.printDebug("[->]\tjobManagerBase.task_done(%s)"%(repr(status)))
         self.Finish(status)
         self.isBusy_off()
         reactor.callLater(0.01,self.poll)
@@ -141,7 +140,7 @@ class jobManagerBase(libdebug.debuggable):
         """
         set the poll delay timer (seconds).  Defaults to 1.0 sec.
         """
-        self.printDebug("[  ]\tjobManagerBase.setPollDelay(%s)"%(`pollDelay`))
+        self.printDebug("[  ]\tjobManagerBase.setPollDelay(%s)"%(repr(pollDelay)))
         self.pollDelay = pollDelay
 
     def isBusy_on(self):  self._isBusy = True
@@ -190,7 +189,7 @@ class jobManagerBase(libdebug.debuggable):
 # class jobManager
 #============================================================================
 class jobManager(jobManagerBase):
-    workQueue = Queue.Queue()
+    workQueue = queue.Queue()
 
 
     # Initialize:: overrides the base initialize.
@@ -209,7 +208,7 @@ class jobManager(jobManagerBase):
     # --- jobManager.query()
     def query(self):
         """ true if there's work to do """
-        self.printDebug("[->]\tjobManager.query(%s)"%(`self`))
+        self.printDebug("[->]\tjobManager.query(%s)"%(repr(self)))
 
         # Shutdown if we're running from the command line and are done.
         if(self.options['cmdLine'] == True and self.WB.workList.empty()):
@@ -256,8 +255,8 @@ class jobManager(jobManagerBase):
             if self.get_debug(): tB.debug_on()
             try:
                 tB.loadBatchFile(task)
-            except ExpatError,msg:
-                print "ERROR: Loading `%s` failed!  [%s]"%(task,msg)
+            except ExpatError as msg:
+                print("ERROR: Loading `%s` failed!  [%s]"%(task,msg))
                 reactor.callLater(0.1, tB.doCallback)
             tB.setCallback(self.getCallback())
             tB.start()
@@ -305,7 +304,7 @@ class batchHandler(jobManagerBase):
         self.batchFileName = ""
         self.batchFilePath = ""
         self.batchFileTree = None
-        self.testQueue = Queue.Queue()
+        self.testQueue = queue.Queue()
         self.testGraph = digraph.digraph()
         ##self.debug_on()
         self.printDebug("[<-] batchHandler.__init__()")
@@ -313,7 +312,7 @@ class batchHandler(jobManagerBase):
 
     # ------------------------------
     def setCallback(self, CB):
-        self.printDebug("[->]\tbatchHandler.setCallback(%s)"%(`CB`))
+        self.printDebug("[->]\tbatchHandler.setCallback(%s)"%(repr(CB)))
         self.theCallback = CB
         self.hasCallback = True
 
@@ -337,7 +336,7 @@ class batchHandler(jobManagerBase):
     # ------------------------------
     def setWhiteboard(self, WB):
         """ set the whiteboard pointer. """
-        self.printDebug("[->]\tbatchHandler.setWhiteBoard(%s)"%(`WB`))
+        self.printDebug("[->]\tbatchHandler.setWhiteBoard(%s)"%(repr(WB)))
         self.WB = WB
 
         
@@ -351,12 +350,12 @@ class batchHandler(jobManagerBase):
         self.testGraph.clear()
         self.testGraph.set_name(self.batchFileName)
         if not os.path.exists(self.batchFileName):
-            print "Error encountered in '%s'"%(self.parentTask)
-            print "\tCould not locate file '%s'\n"%(self.batchFileName)
+            print("Error encountered in '%s'"%(self.parentTask))
+            print("\tCould not locate file '%s'\n"%(self.batchFileName))
         try:
             self.batchFileTree = ElementTree.parse(self.batchFileName)
         except:
-            print "Could not parse '%s'.\n"%(self.batchFileName)
+            print("Could not parse '%s'.\n"%(self.batchFileName))
 
 
         ##########
@@ -364,7 +363,7 @@ class batchHandler(jobManagerBase):
         # MySQL Test Code :: loadBatchFile
         #
         if self.options and self.options["sqldb"] and self.db.connected:
-            from db_mysql import apitestdb
+            from .db_mysql import apitestdb
             fname = os.path.abspath(self.batchFileName)
             if self.db_parent_batchid == None:
                 query="""
@@ -412,7 +411,7 @@ class batchHandler(jobManagerBase):
             if SD.text != None:
                 desc = SD.text
                 if desc != None:
-                    desc = string.lstrip(desc)
+                    desc = desc.lstrip()
                     if desc != "":
                         bSD = ElementTree.SubElement(self.xmlroot,'shortDescription')
                         bSD.text = desc
@@ -434,7 +433,7 @@ class batchHandler(jobManagerBase):
         for iParam in batchFileTreeRoot.findall('parameter'):
             key   = iParam.attrib.get('key',None)
             value = iParam.attrib.get('value',mustPassDefault)
-            value = string.upper(value)
+            value = value.upper()
             if key=='mustPass' and value in ("TRUE","FALSE"):
                 mustPassDefault = value
 
@@ -474,7 +473,7 @@ class batchHandler(jobManagerBase):
         self.clearQueue()
         for iTest in testOrder:
             self.testQueue.put(iTest)
-        self.printDebug("\ttestQueue.queue = %s"%(`self.testQueue.queue`))
+        self.printDebug("\ttestQueue.queue = %s"%(repr(self.testQueue.queue)))
         self.printDebug("\ttestGraph.vertex_list = %s"%self.testGraph.vertex_list())
         return 0
 
@@ -615,7 +614,7 @@ class batchHandler(jobManagerBase):
                 # MySQL Adding FAILDEP database
                 #
                 if self.options and self.options["sqldb"] and self.db.connected:
-                    from db_mysql import apitestdb
+                    from .db_mysql import apitestdb
                     fname = os.path.abspath(self.currentTask)
                     query = """
                         INSERT INTO `results` (`RUNID`,`PID`,`FNAME`,
@@ -662,8 +661,8 @@ class batchHandler(jobManagerBase):
                     element.append(idep)
                 id   = self.WB.TD.B.nextID
                 file = os.path.splitext(os.path.split(self.currentTask)[1])[0]
-                file = string.join( \
-                        self.WB.currentORoot+["t%d.%s.out"%(id,file)],os.path.sep)
+                file = os.path.sep.join( \
+                        self.WB.currentORoot+["t%d.%s.out"%(id,file)])
                 try:
                     # write results output file
                     if(self.options["transient"]==0):
@@ -675,7 +674,7 @@ class batchHandler(jobManagerBase):
                     else:
                         pass
                 except:
-                    print "[100]\tUnable to open file %s for write."%(file)
+                    print("[100]\tUnable to open file %s for write."%(file))
                 self.WB.TD.addBatch(element)
                 self.WB.TD.exitBatch()
                 
@@ -685,7 +684,7 @@ class batchHandler(jobManagerBase):
                 # MySQL Adding FAILDEP to database
                 #
                 if self.options and self.options["sqldb"]:
-                    from db_mysql import apitestdb
+                    from .db_mysql import apitestdb
                     fname = os.path.abspath(self.currentTask)
                     query = """
                         INSERT INTO `results` (`RUNID`,`PID`,`FNAME`,
@@ -732,8 +731,8 @@ class batchHandler(jobManagerBase):
 
                 id = self.WB.TD.T.nextID
                 file = os.path.splitext(os.path.split(self.currentTask)[1])[0]
-                file = string.join( \
-                        self.WB.currentORoot+["t%d.%s.out"%(id,file)],os.path.sep)
+                file = os.path.sep.join( \
+                        self.WB.currentORoot+["t%d.%s.out"%(id,file)])
                 try:
                     # write results output file
                     if(self.options["transient"]==0):
@@ -745,7 +744,7 @@ class batchHandler(jobManagerBase):
                     else:
                         pass
                 except:
-                    print "[100]\tUnable to open file %s for write."%(file)
+                    print("[100]\tUnable to open file %s for write."%(file))
                 self.WB.TD.addTest(element)
 
             # summary stuff for FAILDEP stuff
@@ -765,7 +764,7 @@ class batchHandler(jobManagerBase):
                 for idep in failedDeps:
                     message += "\n%sPREREQ: '%s'\n%sExpected: %s, Actual: %s" % \
                                (38*" ",idep[0],38*" ",idep[1],idep[2])
-                print libapitest.logMessage(failStr,message)
+                print(libapitest.logMessage(failStr,message))
             reactor.callLater(0,self.poll)   # jumpstart the poller :)
             #self.task_done("FAILDEP")
 
@@ -796,7 +795,7 @@ class batchHandler(jobManagerBase):
         """ Called when the batch itself is done. """
         self.printDebug("[->]\tbatchHandler.done()")
 
-        self.printDebug("\ttestQueue.queue = %s"%(`self.testQueue.queue`))
+        self.printDebug("\ttestQueue.queue = %s"%(repr(self.testQueue.queue)))
         self.printDebug("\ttestGraph.vertex_list = %s"%self.testGraph.vertex_list())
 
         # verify batch file status
@@ -820,7 +819,7 @@ class batchHandler(jobManagerBase):
             if   self.status == "PASS":  statusColor = "green"
             elif self.status == "FAIL":  statusColor = "red"
             statusStr = "%s"%(libapitest.ANSIstring(statusColor,self.status))
-            print libapitest.logMessage(statusStr, self.batchFileName)
+            print(libapitest.logMessage(statusStr, self.batchFileName))
 
         self.saveResultData()
         self.WB.TD.exitBatch()
@@ -830,7 +829,7 @@ class batchHandler(jobManagerBase):
     def saveResultData(self):
         # Save the output to a File if we are requested to!
         if( self.options and self.options["transient"]==0 ):
-            fileName = string.join(self.WB.currentORoot,os.path.sep) 
+            fileName = os.path.sep.join(self.WB.currentORoot)
             fileName += "/b%d."%(self.batchID)
             fileName += os.path.splitext(os.path.basename(self.batchFileName))[0]
             fileName += ".out"
@@ -844,7 +843,7 @@ class batchHandler(jobManagerBase):
         # MySQL Test Code BEGIN
         #
         if self.options and self.options["sqldb"] and self.db.connected:
-            from db_mysql import apitestdb
+            from .db_mysql import apitestdb
             query = """
                     UPDATE `results` SET `TFINISH`=CURRENT_TIMESTAMP,`STATUS`='%s'
                     WHERE ID=%s

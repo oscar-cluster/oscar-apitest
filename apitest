@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #######################################################################
 #
 #     This Cplant(TM) source code is the property of Sandia National
@@ -23,7 +23,7 @@
 #  $Id: apitest,v 1.47 2013/11/28 18:06:35 olahaye74 Exp $
 #
 
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 __author__  = "William McLendon"
 __revision__= "$Id: apitest,v 1.47 2013/11/28 18:06:35 olahaye74 Exp $"
 
@@ -54,7 +54,7 @@ def check_module_requirements():
     except ImportError:
         twisted_core = False
         do_exit = True
-        print "Missing python module 'Twisted'       : (http://www.twistedmatrix.com)"
+        print("Missing python module 'Twisted'       : (http://www.twistedmatrix.com)")
 
     try:
         from twisted.web import server
@@ -62,7 +62,7 @@ def check_module_requirements():
     except ImportError:
         twisted_web = False
         do_exit = True
-        print "Missing python module 'TwistedWeb'    : (http://www.twistedmatrix.com)"
+        print("Missing python module 'TwistedWeb'    : (http://www.twistedmatrix.com)")
         
     try:
         from xml.etree import ElementTree
@@ -70,10 +70,10 @@ def check_module_requirements():
     except:
         elementtree = False
         do_exit = True
-        print "Missing python module 'ElementTree'   : (http://www.effbot.org)"
+        print("Missing python module 'ElementTree'   : (http://www.effbot.org)")
 
     if do_exit:
-        print "\nPlease obtain and install the missing python modules\n"
+        print("\nPlease obtain and install the missing python modules\n")
         import sys
         sys.exit(1)
 
@@ -238,10 +238,10 @@ class APItest(libdebug.debuggable):
                 
             ## If we can't access the output root, set TRANSIENT mode on.
             if not os.access(thePath,os.F_OK|os.R_OK|os.W_OK|os.X_OK):
-                print "[ERROR]\tUnable to access `%s/`."%(os.path.abspath(thePath))
-                print "[ERROR]\tSetting transient mode."
+                print("[ERROR]\tUnable to access `%s/`."%(os.path.abspath(thePath)))
+                print("[ERROR]\tSetting transient mode.")
                 self.options["transient"] = 1
-                if self.options.has_key("subOptions"):
+                if "subOptions" in self.options:
                     self.options.subOptions["transient"] = self.options["transient"]
 
         # shutdown the reactor (debugging) after an hour
@@ -257,7 +257,7 @@ class APItest(libdebug.debuggable):
         
         self.options["cmdLine"] = True
         
-        if self.options.has_key('file'):
+        if 'file' in self.options:
             
             if self.options['file'] == None:
                 ## Print out options if no command line is given.
@@ -267,8 +267,8 @@ class APItest(libdebug.debuggable):
             elif not os.path.exists(self.options["file"]):
                 errStr = 'ERROR'
                 errStr = libapitest.ANSIstring('red','ERROR')
-                print libapitest.logMessage(errStr, \
-                    'File "%s" does not exist!'%(options['file']) )
+                print(libapitest.logMessage(errStr, \
+                    'File "%s" does not exist!'%(options['file']) ))
                 
             else:
                 # clear the work list & reset running flag.
@@ -314,12 +314,12 @@ class APItest(libdebug.debuggable):
         host = self.options.subOptions['host']
         port = self.options.subOptions['port']
         theURL = "http://%s:%s/"%(host,port)
-        print "Starting the APItest server"
-        print ""
-        print "Please set your web browser to the following URL:"
-        print ""
-        print "\t%s"%(theURL)
-        print ""
+        print("Starting the APItest server")
+        print("")
+        print("Please set your web browser to the following URL:")
+        print("")
+        print("\t%s"%(theURL))
+        print("")
         ## webbrowser.open(theURL)
 
         ## set up the HTTP root stuff
@@ -453,9 +453,9 @@ if __name__ == '__main__':
     options = Options()
     try:
         options.parseOptions()
-    except usage.UsageError,errortext:
-        print '%s: %s' % (sys.argv[0], errortext)
-        print '%s: Try --help for usage details.' % (sys.argv[0])
+    except usage.UsageError as errortext:
+        print('%s: %s' % (sys.argv[0], errortext))
+        print('%s: Try --help for usage details.' % (sys.argv[0]))
         sys.exit(1)
 
     apitest = APItest(options)

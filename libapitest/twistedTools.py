@@ -25,11 +25,9 @@ library (http://www.twistedmatrix.com)
 
 import os
 import os.path
-import libdebug
-import systools
-import string
+from . import libdebug
+from . import systools
 from twisted.internet import protocol,reactor,defer
-from exceptions import Exception
 from xml.etree import ElementTree
 
 
@@ -137,8 +135,8 @@ class processHandlerBase(protocol.ProcessProtocol, libdebug.debuggable):
     def outReceived(self, newStdout):
         """ Executes when we receive some STDOUT """
         self.printDebug("[->]\toutReceived()")
-        self.printDebug("\tdata_received=[%s]"%(`newStdout`))
-        self.stdout = self.stdout + newStdout
+        self.printDebug("\tdata_received=[%s]"%(repr(newStdout)))
+        self.stdout = self.stdout + repr(newStdout)
         self.printDebug("[<-]\toutReceived()")
 
 
@@ -151,7 +149,7 @@ class processHandlerBase(protocol.ProcessProtocol, libdebug.debuggable):
     def errReceived(self, newStderr):
         """ Executes when we receive some STDERR """
         self.printDebug("[->]\terrReceived")
-        self.stderr = self.stderr + newStderr
+        self.stderr = self.stderr + repr(newStderr)
         self.printDebug("[<-]\terrReceived")
         
 
@@ -227,13 +225,13 @@ class processHandlerBase(protocol.ProcessProtocol, libdebug.debuggable):
                 self.wdir = ""
 
         ##self.debug_on()
-        self.printDebug( "\tcmd  =%s"%(`self.cmd`)  )
-        self.printDebug( "\targs =%s"%(`self.args`) )
+        self.printDebug( "\tcmd  =%s"%(repr(self.cmd))  )
+        self.printDebug( "\targs =%s"%(repr(self.args)) )
         ##self.printDebug( "\tenv  =%s"%(`self.env`)  )
-        self.printDebug( "\twdir =%s"%(`self.wdir`) )
-        self.printDebug( "\tuid  =%s (%s)"%(`self.uid`,uid) )
-        self.printDebug( "\tgid  =%s"%(`self.gid`)  )
-        self.printDebug( "\tuname=%s"%(`self.uname`))
+        self.printDebug( "\twdir =%s"%(repr(self.wdir)) )
+        self.printDebug( "\tuid  =%s (%s)"%(repr(self.uid),uid) )
+        self.printDebug( "\tgid  =%s"%(repr(self.gid))  )
+        self.printDebug( "\tuname=%s"%(repr(self.uname)))
         ##self.debug_off()
 
         if os.path.exists(self.wdir) or self.wdir=="":
@@ -252,7 +250,7 @@ class processHandlerBase(protocol.ProcessProtocol, libdebug.debuggable):
                         targ = [ self.wdir+self.args[0] ]
                     else:
                         targ = []
-                    tstr = string.join(targ)
+                    tstr = "".join(targ)
                     self.args = ["su","-l",self.uname,"-c",tstr]
                     reactor.spawnProcess(self,self.cmd,self.args,self.env,self.wdir)
                 else:
@@ -262,7 +260,7 @@ class processHandlerBase(protocol.ProcessProtocol, libdebug.debuggable):
                 self.env.update( os.environ.copy() )
                 reactor.spawnProcess(self,self.cmd,self.args,self.env,self.wdir)
                 self.pid = self.transport.pid
-                self.printDebug( "\tpid=%s"%(`self.getpid()`) )
+                self.printDebug( "\tpid=%s"%(repr(self.getpid())) )
         else:
             self.wdirDoesNotExist()
             
@@ -277,15 +275,15 @@ if "__main__" == __name__:
     if 1:
         tPHB = processHandlerBase()
         tPHB.Initialize()
-        print "tPHB=", `tPHB`
+        print("tPHB=", repr(tPHB))
         tPHB.debug_on()
         reactor.callLater(1,tPHB.execute,"ls",["-l","-t","-r"], "./" )
         reactor.callLater(2, reactor.stop )
         reactor.run()
 
-        print "STDOUT=", `tPHB.getStdout()`
-        print "STDERR=", `tPHB.getStderr()`
-        print "STATUS=", `tPHB.getStatus()`
-        print "PID   =", `tPHB.getpid()`
+        print("STDOUT=", repr(tPHB.getStdout()))
+        print("STDERR=", repr(tPHB.getStderr()))
+        print("STATUS=", repr(tPHB.getStatus()))
+        print("PID   =", repr(tPHB.getpid()))
 
 #EOF

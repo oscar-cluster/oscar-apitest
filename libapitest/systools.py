@@ -27,9 +27,9 @@ import os
 import os.path
 
 # KLUDGE FOR PATH SETTING
-if not os.path.__dict__.has_key('sep'):
+if 'sep' not in os.path.__dict__:
     os.path.sep = "/"
-if not os.path.__dict__.has_key('pathsep'):
+if 'pathsep' not in os.path.__dict__:
     os.path.pathsep = ":"
 
 #-------------------------------------------------------------
@@ -41,7 +41,7 @@ def str_unique(l):
    dict = {}
    for s in l:
       dict[s] = 1
-   return dict.keys()
+   return list(dict.keys())
 
 
 # ------------------------------------------------------------
@@ -104,7 +104,7 @@ def searchPathForExecutable(prog):
             if nfo[stat.ST_MODE] & stat.S_IEXEC:
                 F_exec = True
     except: 
-        if os.environ.has_key("PATH"):
+        if "PATH" in os.environ:
             pathList = os.environ["PATH"]
             pathList = pathList.split( os.path.pathsep )  # (ie. break on the ':' of the path listing
             #pathList = dict.fromkeys(pathList).keys()  # make unique!
@@ -128,11 +128,11 @@ def searchPathForExecutable(prog):
 # ------------------------------------------------------------
 if __name__ == "__main__":
     ##print "uid = %s\tuname = %s"%("501",getUNAMEfromUID(501))
-    print searchPathForExecutable('ls')
-    print searchPathForExecutable('systools.py')
-    print searchPathForExecutable('whoozahamuttet')
-    print searchPathForExecutable('/home/wcmclen/ls')
-    print searchPathForExecutable('../setup.py')
+    print(searchPathForExecutable('ls'))
+    print(searchPathForExecutable('systools.py'))
+    print(searchPathForExecutable('whoozahamuttet'))
+    print(searchPathForExecutable('/home/wcmclen/ls'))
+    print(searchPathForExecutable('../setup.py'))
     pass
 
 # EOF #

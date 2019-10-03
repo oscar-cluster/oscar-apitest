@@ -31,8 +31,8 @@ PhantomUser should not exist on the target computer for this test to pass.
 
 <test type="script" timeout="5">
 
-<command interpreter="python" uname='PhantomUser' wdir='/tmp/'>
-#!/usr/bin/env python
+<command interpreter="python2" uname='PhantomUser' wdir='/tmp/'>
+#!/usr/bin/env python2
 import os
 print os.getuid()
 print os.getgid()

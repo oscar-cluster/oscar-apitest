@@ -38,4 +38,4 @@ class debuggable:
     def get_debug(self): return self.debug
     def printDebug(self, msg):
         if self.debug:
-            print msg
+            print(msg)

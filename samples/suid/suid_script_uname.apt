@@ -30,8 +30,8 @@
 
   <test type="script" timeout="5">
 
-<command interpreter="python" uname='testuser' wdir='/tmp/'>
-#!/usr/bin/env python
+<command interpreter="python2" uname='testuser' wdir='/tmp/'>
+#!/usr/bin/env python2
 import os
 print os.getuid()
 print os.getgid()

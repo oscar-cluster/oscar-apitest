@@ -8,8 +8,8 @@
 
   <test type="script">
   
-    <command interpreter="python" wdir="/tmp">
-#!/usr/bin/env python
+    <command interpreter="python2" wdir="/tmp">
+#!/usr/bin/env python2
 import os
 import sys
 for i in range(100):

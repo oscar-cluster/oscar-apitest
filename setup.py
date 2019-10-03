@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
   ###################################################################
   #
@@ -24,11 +24,11 @@
 import distutils
 from distutils.core import setup
 from os.path import normpath
-from string import replace
+#from string import replace
 import sys, os, re, os.path,getopt
 
 # Kludge fix for python2.2 that doesn't have os.path.sep
-if not os.path.__dict__.has_key('sep'):
+if 'sep' not in os.path.__dict__:
     os.path.sep = "/"
 
 
@@ -38,7 +38,7 @@ if not os.path.__dict__.has_key('sep'):
 #
 #####
 __author__   = "William McLendon"
-__version__  = "1.0.2"
+__version__  = "1.0.3"
 
 #####
 #
@@ -182,7 +182,7 @@ _classifiers_ = [
 
 
 #####
-print 70*"-"
+print(70*"-")
 #print "\tInstalling apitest v%s into '%s'"%(__version__,install_root)
 #print 70*"-"
 

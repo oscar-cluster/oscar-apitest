@@ -21,8 +21,6 @@ Generic HTML widgets for making buttons, horizontal lines, colors, etc.
   #
   #############################################################################
 
-import string
-
 def genButton(name,value,opts):
     return '<input type=BUTTON name="%s" value="%s" %s>'%(name,value,opts)
 
@@ -50,7 +48,7 @@ def genHRuleTable(width,height,color):
 
 def genColor(colorName):
     """ Generates an HTML color code according to the name given """
-    colorName = string.upper(colorName)
+    colorName = colorName.upper()
     if   colorName == 'BLACK'     : return '#000000'
     elif colorName == "TURQUOISE" : return '#0099CC'
     elif colorName == 'PASS'      : return '#008000'
@@ -104,16 +102,16 @@ def test(label,control,test):
     """ Nothing to see here... move along... move along """
     failed=0
     if control == test:
-        print "%-24s\tPASS"%(label)
+        print("%-24s\tPASS"%(label))
     else:
-        print "%-24s\tFAIL"%(label)
+        print("%-24s\tFAIL"%(label))
         failed = 1
     return failed
 
 
 def testme():
     """ Pay no mind to the man behind the curtain... """
-    print "Testing module: htmltools.py"
+    print("Testing module: htmltools.py")
     test("genCheckBox", \
          '<input type=CHECKBOX name="nme" value="val" >\n', \
          genCheckBox('nme','val','') )

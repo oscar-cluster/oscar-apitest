@@ -33,13 +33,12 @@ various APItest modules.
 #=============================================================================
 import re
 import hashlib
-import string
 import time
-from exceptions import Exception
+#from exceptions import Exception
 from xml.etree import ElementTree
-import twistedTools
-import libdebug
-import Queue
+from . import twistedTools
+from . import libdebug
+import queue
 from twisted.internet import reactor,defer
 import os
 import os.path
@@ -53,7 +52,7 @@ class notImplementedError(Exception):
     def __init__(self,msg=""):
         self.msg = msg
     def __str__(self):
-        return "notImplementedError: %s"%(`self.msg`)
+        return "notImplementedError: %s"%(repr(self.msg))
 
 class filePermissionError(Exception):
     """ Called if we encounter a permission problem. """
@@ -117,11 +116,11 @@ def xmlObjToString(element=None):
         s = ""
         textBlock = False
         level = 0
-        fields = re.split('(<.*?>)',ElementTree.tostring(element))
+        fields = re.split('(<.*?>)',ElementTree.tostring(element,encoding="unicode"))
         for f in fields:
             if f[:4]=="<!--":
                 s += "\n"+f+"\n"
-            elif string.strip(f)=='':
+            elif f.strip()=='':
                 s += "\n"
             elif f[0]=="<" and f[1] != "/" and f[len(f)-2:]=="/>":
                 s += " "*(2*level)+f
@@ -190,7 +189,7 @@ def getTestType(file=None):
         try:
             ret = ElementTree.parse(file).getroot().tag
         except:
-            print "Error parsing %s"%(file)
+            print("Error parsing %s"%(file))
     return ret
 
 
@@ -372,7 +371,7 @@ class testHandlerBase(libdebug.debuggable):
         """
         load the test file and process it. 
         """
-        self.printDebug("[->]\ttestHandlerBase.load(%s)"%(`testFileName`))
+        self.printDebug("[->]\ttestHandlerBase.load(%s)"%(repr(testFileName)))
         self.testFileOK = False
         if testFileName:
             self.testFileName = testFileName
@@ -382,9 +381,9 @@ class testHandlerBase(libdebug.debuggable):
             
             try:
                 self.xmlFileTree  = ElementTree.parse(self.testFileName)
-            except ExpatError,e:
-                print "Error parsing '%s' in libapitest.load().\n====> %s" % \
-                                (self.testFileName, e)
+            except ExpatError as e:
+                print("Error parsing '%s' in libapitest.load().\n====> %s" % \
+                                (self.testFileName, e))
                 return False
 
             self.xmlFileRoot  = self.xmlFileTree.getroot()
@@ -452,7 +451,7 @@ class testHandlerBase(libdebug.debuggable):
                 if SD.text != None:
                     desc = SD.text
                     if desc != None:
-                        desc = string.lstrip(desc)
+                        desc = desc.lstrip()
                         if desc != "":
                             bSD = ElementTree.SubElement(
                                         self.xmlResultTree,'shortDescription')
@@ -466,10 +465,10 @@ class testHandlerBase(libdebug.debuggable):
         ## ========================================================
         #  MySQL Stuff BEGIN
         #
-        if self.options and self.options.has_key("sqldb") and \
+        if self.options and "sqldb" in self.options and \
            self.options["sqldb"] and self.db.connected:
             
-            from db_mysql import apitestdb
+            from .db_mysql import apitestdb
             fname = os.path.abspath(self.testFileName)
             query = ""
             if self.db_batchid == None:
@@ -531,7 +530,7 @@ class testHandlerBase(libdebug.debuggable):
         execFuncName = "do_"+self.testType
         self.printDebug("\t  execFunc = %s"%(execFuncName))
         if not hasattr(self, execFuncName):
-            print "\tERROR: function %s does not exist!"%(execFuncName)
+            print("\tERROR: function %s does not exist!"%(execFuncName))
 
         # else:
         #  WCM: need to insert predelay sleep.  Must be nonblocking
@@ -562,14 +561,14 @@ class testHandlerBase(libdebug.debuggable):
         * sets self.status flag too
         """
         self.printDebug("[->]\ttestHandlerBase.validate()")
-        self.printDebug('\t\tACTUAL: %s'%(`self.actual`))
-        self.printDebug('\t\tEXPECT: %s'%(`self.expect`))
+        self.printDebug('\t\tACTUAL: %s'%(repr(self.actual)))
+        self.printDebug('\t\tEXPECT: %s'%(repr(self.expect)))
         self.matchedOK = True
         
-        for k in self.expect.keys():
+        for k in list(self.expect.keys()):
             expect_type = self.expect[k][0]
-            self.printDebug("\tvalidating :: %s"%(`k`))
-            if self.actual.has_key(k):
+            self.printDebug("\tvalidating :: %s"%(repr(k)))
+            if k in self.actual:
                 self.actual[k] = str(self.actual[k])
                 if expect_type == 'regexp':
                     rmatch = re.compile(self.expect[k][1],re.M|re.S)
@@ -605,10 +604,10 @@ class testHandlerBase(libdebug.debuggable):
             #
             # MySQL BEGIN
             #
-            if self.options and self.options.has_key("sqldb") and \
+            if self.options and "sqldb" in self.options and \
                self.options["sqldb"] and self.db.connected:
                 
-                from db_mysql import apitestdb
+                from .db_mysql import apitestdb
                 query = """
                 INSERT INTO `resultdata` (`resultid`,`match`,`type`,`format`,`expect`,`actual`)
                 VALUES (%d,%d,'%s','%s','%s','%s')
@@ -620,7 +619,7 @@ class testHandlerBase(libdebug.debuggable):
             #
             ###############
 
-        if self.actual.has_key("ERROR") and not self.expect.has_key("ERROR"):
+        if "ERROR" in self.actual and "ERROR" not in self.expect:
             self.matchedOK = False
             xmlOutput = ElementTree.SubElement(self.xmlResultTree, \
                                                'output',matched="NO", \
@@ -664,9 +663,9 @@ class testHandlerBase(libdebug.debuggable):
             self.matchCount += 1
             
         self.printDebug('\tmatchedOK   = %s'%(self.matchedOK))
-        self.printDebug('\tmatchData   = %s'%(`self.matchData`))
+        self.printDebug('\tmatchData   = %s'%(repr(self.matchData)))
         self.printDebug('\tmatch       = %s'%(self.match))
-        self.printDebug('\tmatchCount  = %s'%(`self.matchCount`))
+        self.printDebug('\tmatchCount  = %s'%(repr(self.matchCount)))
         self.printDebug('\trep data    = %s / %s'%(self.repDone,self.repCount))
         # for right now, we're not iterating a test... 
         self.printDebug("[<-]\ttestHandlerBase.validate()")
@@ -723,9 +722,10 @@ class testHandlerBase(libdebug.debuggable):
 
         # Dump the original Test Script into the output XML as a comment.
         testFileString = xmlObjToString(self.xmlFileTree.getroot())
-        testFileString = string.replace(testFileString, "--", "-")
+        testFileString = testFileString.replace("--", "-")
         orig = ElementTree.Comment(testFileString)
-        self.xmlResultTree._children.append(orig)
+        #self.xmlResultTree._children.append(orig)
+        self.xmlResultTree.append(orig)
 
         # if command line: print out message indicating test status
         # colorize it too!
@@ -735,7 +735,7 @@ class testHandlerBase(libdebug.debuggable):
             if   self.status == "PASS":  statusColor = "green"
             elif self.status == "FAIL":  statusColor = "red"
             statusStr = "%s"%(ANSIstring(statusColor,self.status))
-            print logMessage(statusStr, self.testFileName)
+            print(logMessage(statusStr, self.testFileName))
 
         # cleanup if the cleanup handler exists
         cleanupFuncName = "cleanup_"+self.testType
@@ -754,7 +754,7 @@ class testHandlerBase(libdebug.debuggable):
         """
         # Save the output to a File if we are requested to!
         if( self.options and self.options["transient"]==0 ):
-            fileName = string.join(self.WB.currentORoot,"/") 
+            fileName = "/".join(self.WB.currentORoot) 
             fileName += "/t%d."%(self.testID)
             fileName += os.path.splitext(os.path.basename(self.testFileName))[0]
             fileName += ".out"
@@ -767,7 +767,7 @@ class testHandlerBase(libdebug.debuggable):
         # MySQL Test Code BEGIN
         #
         if self.options and self.options["sqldb"] and self.db.connected:
-            from db_mysql import apitestdb
+            from .db_mysql import apitestdb
             query = """
                     UPDATE `results` SET `TFINISH`=CURRENT_TIMESTAMP,`STATUS`='%s'
                     WHERE ID=%s
@@ -848,7 +848,7 @@ class mystack(libdebug.debuggable):
         self.data = []
 
     def __str__(self):
-        return `self.data`
+        return repr(self.data)
 
     def __len__(self):
         return len(self.data)
@@ -896,14 +896,14 @@ class dbtable(libdebug.debuggable):
         return self.data[idx]
 
     def __delitem__(self, id):
-        if self.data.has_key(id):
+        if id in self.data:
             self.data.__delitem__(id)
 
     def __str__(self):
         s  = "-----------------------\n"
-        s += "nextID    = %s\n"%(`self.nextID`)
-        s += "currentID = %s\n"%(`self.currentID`)
-        s += "data      = %s\n"%(`self.data`)
+        s += "nextID    = %s\n"%(repr(self.nextID))
+        s += "currentID = %s\n"%(repr(self.currentID))
+        s += "data      = %s\n"%(repr(self.data))
         return s
 
 # ========================================================================
@@ -939,7 +939,7 @@ class tblRunList(dbtable):
         return self.data[runID][1]
 
     def getRunIDs(self):
-        return self.data.keys()
+        return list(self.data.keys())
 
     def __str__(self):
         s = "tblRunList\n"
@@ -976,19 +976,19 @@ class tblBatchList(dbtable):
         self.idstk.clear()
 
     def getRunID(self,ID):
-        if self.data.has_key(ID):
+        if ID in self.data:
             return self.data[ID][2]
         else:
             return None
 
     def getTestList(self,ID):
-        if self.data.has_key(ID):
+        if ID in self.data:
             return self.data[ID][0]
         else:
             return None
 
     def getSubBatchList(self,ID):
-        if self.data.has_key(ID):
+        if ID in self.data:
             return self.data[ID][1]
         else:
             return None
@@ -1073,15 +1073,15 @@ class testDataType(libdebug.debuggable):
             return None
 
     def hasRun(self,ID):
-        return self.R.data.has_key(ID)
+        return ID in self.R.data
 
     def getTestsByRun(self,ID):
-        if self.R.data.has_key(ID):
+        if ID in self.R.data:
             return self.R.getTestList(ID)
         else: return None
 
     def getBatchesByRun(self,ID):
-        if self.R.data.has_key(ID):
+        if ID in self.R.data:
             return self.R.getBatchList(ID)
         else:
             return None
@@ -1096,7 +1096,7 @@ class testDataType(libdebug.debuggable):
         return self.B.getRunID(ID)
 
     def hasTest(self,ID):
-        return self.T.data.has_key(ID)
+        return ID in self.T.data
 
     def getTest(self,ID):
         if self.hasTest(ID):
@@ -1105,7 +1105,7 @@ class testDataType(libdebug.debuggable):
             return None
 
     def hasBatch(self,ID):
-        return self.B.data.has_key(ID)
+        return ID in self.B.data
     
     def getBatch(self,ID):
         if self.hasBatch(ID):
@@ -1158,7 +1158,7 @@ class extendable:
         try:
             setattr(self, dataMemberName, dataMemberData)
         except:
-            print "Error in extendable, could not set attribte"
+            print("Error in extendable, could not set attribte")
 
     def delitem(self, dataMemberName):
         if hasattr(self, dataMemberName):
@@ -1172,8 +1172,8 @@ class extendable:
         return item
 
     def display(self):
-        for k in self.__dict__.keys():
-            print "  %14s::\t%s"%(`k`,`getattr(self,k)`)
+        for k in list(self.__dict__.keys()):
+            print("  %14s::\t%s"%(repr(k),repr(getattr(self,k))))
 
 
 
@@ -1186,7 +1186,7 @@ class whiteboard(libdebug.debuggable):
     easy passing of data around.
     """
     def __init__(self):
-        self.workList  = Queue.Queue()
+        self.workList  = queue.Queue()
         self.running = [False, (-1,"")]
         self.TD = testDataType()
 
@@ -1216,16 +1216,15 @@ def getTimestampByRunID(runID,whiteBoard):
 def makeOutputDir(WB, runID):
     retVal = True
     ts = getTimestampByRunID(runID,WB)
-    ts = string.replace(ts, ":","-")
-    ts = string.replace(ts, "T",".")
+    ts = ts.replace(":","-")
+    ts = ts.replace("T",".")
     WB.currentORoot.append("run."+ts)
-    theOutputPath = os.path.normpath(string.join(WB.currentORoot,"/"))
-    ##print string.join(WB.currentORoot,"/")
+    theOutputPath = os.path.normpath("/".join(WB.currentORoot))
     
     try:
         os.makedirs( theOutputPath )
     except:
-        print "Failed to make directory '%s'!"%( theOutputPath )
+        print("Failed to make directory '%s'!"%( theOutputPath ))
         retVal = False
     return retVal
 
@@ -1241,9 +1240,9 @@ def makeOutputDir(WB, runID):
 # ----------------------------------
 def cmd_cb(result):
     """ Internal Testing Routine """
-    print "[->]\tEntering test callback!"
-    for k in result.keys():
-        print "%s=\t%s"%(k, `result[k]`)
+    print("[->]\tEntering test callback!")
+    for k in list(result.keys()):
+        print("%s=\t%s"%(k, repr(result[k])))
 
 if "__main__" == __name__:
     """ For testing purposes only """

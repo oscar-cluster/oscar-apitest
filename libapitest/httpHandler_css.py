@@ -22,19 +22,19 @@ Classes that handle generation of webpages for APItest
 #############################################################################
 # $Id: httpHandler_css.py,v 1.21 2005/06/01 00:06:38 wcmclen Exp $
 #############################################################################
-import re, string, os.path
+import re, os.path
 from sys import exit
 from os import getcwd, makedirs
 from twisted.web import resource
 from twisted.internet import reactor
 from xml.etree import ElementTree
 from xml.parsers.expat import ExpatError
-import stylesheets, htmltools, libapitest, libdebug
-from htmltools import genCheckBox,genHRuleTable,genSubmitButton,genSubmitTextButton
-from htmltools import genResetButton,genTitlebar
+from . import stylesheets, htmltools, libapitest, libdebug
+from .htmltools import genCheckBox,genHRuleTable,genSubmitButton,genSubmitTextButton
+from .htmltools import genResetButton,genTitlebar
 
 # Kludge:
-if not os.path.__dict__.has_key('sep'): 
+if 'sep' not in os.path.__dict__: 
     os.path.sep = '/'
     
 def genPopupButton(name,label,url,width,height):
@@ -81,17 +81,17 @@ def genTestResultTableFromElement(testID,element):
     html += "<tr><td>MD5</td>"
     html += "<td>%s</td></tr>\n"%(element.attrib.get('md5sum'))
     
-    if element.attrib.has_key('uname'):
+    if 'uname' in element.attrib:
         if element.attrib.get('uname') != 'None':
             html += "<tr><td>uname</td>"
             html += "<td>%s<td></tr>\n"%(element.attrib.get('uname'))
-    if element.attrib.has_key('uid'):
+    if 'uid' in element.attrib:
         html += "<tr><td>uid</td>"
         html += "<td>%s</td></tr>\n"%(element.attrib.get('uid'))
-    if element.attrib.has_key('gid'):
+    if 'gid' in element.attrib:
         html += "<tr><td>gid</td>"
         html += "<td>%s</td></tr>\n"%(element.attrib.get('gid'))
-    if element.attrib.has_key('timeoutTime'):
+    if 'timeoutTime' in element.attrib:
         html += "<tr><td>Timeout</td>\n"
         html += "<td>%s (%s)</td></tr>\n"% \
                 (element.attrib.get('timeoutFlag'), element.attrib.get('timeoutTime'))
@@ -177,7 +177,7 @@ def get_short_description(filename):
         if desc != None:
             desc = desc.text
             if desc != None:
-                desc = string.lstrip(desc)
+                desc = desc.lstrip()
                 if desc != "":
                     ret = desc[:maxShortDescStringLength]
     return (ret,parsedOk)
@@ -209,7 +209,7 @@ class wwwShutdown(resource.Resource, libdebug.debuggable):
         turnedOff = False
         doTurnOff = True
         
-        if request.args.has_key('status'):
+        if 'status' in request.args:
             if request.args['status'][0] == 'off':
                 turnedOff = True
                 doTurnOff = False
@@ -275,7 +275,7 @@ class www_process_html(resource.Resource, libdebug.debuggable):
         # MySQL Test Code HERE
         #
         if self.options and self.options.parent["sqldb"] and self.db.connected:
-            from db_mysql import apitestdb
+            from .db_mysql import apitestdb
             db_runid = self.db.create_new_run()
         #
         # END MySQL
@@ -285,12 +285,12 @@ class www_process_html(resource.Resource, libdebug.debuggable):
         
         fileList = []
         # Build list of files to execute.
-        for k in request.args.keys():
+        for k in list(request.args.keys()):
             testFileRE = re.compile('.*(\.apt)$')
             if testFileRE.match(request.args[k][0]):
                 self.WB.workList.put(request.args[k][0])
                 
-        for k in request.args.keys():
+        for k in list(request.args.keys()):
             testFileRE = re.compile('.*(\.apb)$')
             if testFileRE.match(request.args[k][0]):
                 self.WB.workList.put(request.args[k][0])
@@ -300,7 +300,7 @@ class www_process_html(resource.Resource, libdebug.debuggable):
         if( self.options["transient"]==0):
             if not libapitest.makeOutputDir(self.WB, runID):
                 self.options["transient"] = 1
-                if self.options.has_key("subOptions"):
+                if "subOptions" in self.options:
                     self.options.subOptions["transient"] = 1
                     
         # Generate the HTML
@@ -376,7 +376,7 @@ class wwwShowXML(resource.Resource,libdebug.debuggable):
                "</HEAD>\n<BODY>\n"
         html += genTitlebar("Result Source")
         html += "<HR COLOR=BLACK>\n"
-        if request.args.has_key('testID'):
+        if 'testID' in request.args:
             testID = int(request.args['testID'][0])
             testXML = self.WB.TD.getTest(testID)
             xmlText = libapitest.xmlObjToString(testXML)
@@ -406,7 +406,7 @@ class wwwShowTestFileXML(resource.Resource, libdebug.debuggable):
         html += "<A HREF='javascript:history.back()'>Back</A>&nbsp;\n"
         html += "<A HREF='javascript:self.close()'>Close</A>\n"	
         html += "<HR COLOR=BLACK>\n"
-        if request.args.has_key('fileName'):
+        if 'fileName' in request.args:
             fileName = request.args['fileName'][0]
             html += "<H2>%s</H2>"%(fileName)
             if os.path.exists(fileName):
@@ -417,7 +417,7 @@ class wwwShowTestFileXML(resource.Resource, libdebug.debuggable):
                     xmlTxt = xmlTxt.replace('<','&lt;')
                     xmlTxt = xmlTxt.replace('>','&gt;')
                     html  += "<PRE>\n%s\n</PRE>\n"%(xmlTxt)
-                except ExpatError,e:
+                except ExpatError as e:
                     html += "<FONT COLOR=RED><B>Error parsing XML file</B></FONT><BR>\n"
                     html += "<PRE>%s%s</PRE>\n"%(5*"&nbsp;",e)
             else:
@@ -462,17 +462,17 @@ class wwwShowTestFileSummary(resource.Resource, libdebug.debuggable):
         info = None
         if element != None and element.text != None:
             info = element.text
-            info = string.lstrip(info)
-            info = string.rstrip(info)
+            info = info.lstrip()
+            info = info.rstrip()
             if info[0]=='\n': info = info[1:]
-            info = string.replace(info,'\n','<BR>')
+            info = info.replace('\n','<BR>')
                     
         # get shortDescription
         element = xmlroot.find('shortDescription')
         shortDesc = None
         if element != None:
             shortDesc = element.text
-            shortDesc = string.rstrip(string.lstrip(shortDesc))
+            shortDesc = shortDesc.strip()
             
         # get test type
         element = xmlroot.find('test')
@@ -526,17 +526,17 @@ class wwwShowTestFileSummary(resource.Resource, libdebug.debuggable):
         info = None
         if element != None and element.text != None:
             info = element.text
-            info = string.lstrip(info)
-            info = string.rstrip(info)
+            info = info.lstrip()
+            info = info.rstrip()
             if info[0]=='\n': info = info[1:]
-            info = string.replace(info,'\n','<BR>')
-                    
+            info = info.replace('\n','<BR>')
+
         # get shortDescription
         element = xmlroot.find('shortDescription')
         shortDesc = None
         if element != None:
             shortDesc = element.text
-            shortDesc = string.rstrip(string.lstrip(shortDesc))
+            shortDesc = shortDesc.strip()
             
         (path,file) = os.path.split(os.path.abspath(fileName))
         
@@ -578,8 +578,8 @@ class wwwShowTestFileSummary(resource.Resource, libdebug.debuggable):
             html += tblRowSep
         for i in tests:
             tname = None
-            for k in i.attrib.keys():
-                if string.lower(k) == 'name': 
+            for k in list(i.attrib.keys()):
+                if k.lower() == 'name': 
                     tname=i.attrib[k]
             html += "<TR>\n"
             html += "  <TD>TEST</TD>\n"
@@ -606,7 +606,7 @@ class wwwShowTestFileSummary(resource.Resource, libdebug.debuggable):
 
     def render(self,request):
         html  = "<HTML>\n<HEAD>\n</HEAD>\n<BODY>\n"
-        if request.args.has_key('fileName'):
+        if 'fileName' in request.args:
             fileName = request.args['fileName'][0]
             if os.path.exists(fileName):
                 try:
@@ -617,7 +617,7 @@ class wwwShowTestFileSummary(resource.Resource, libdebug.debuggable):
                     elif xmlroot.tag=="testBatch":
                         html += self.displayBatchFileSummary(fileName,xmlroot)
                         
-                except ExpatError,e:
+                except ExpatError as e:
                     html += "<a href='javascript:self.close()'>Close</a><BR>\n"
                     html += "<FONT COLOR=RED><B>Error parsing XML file</B></FONT><BR>\n"
                     html += "<PRE>%s%s</PRE>\n"%(5*"&nbsp;",e)
@@ -684,7 +684,7 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
         try:
             rl_raw = os.listdir(oroot)
         except:
-            print "error in getRunlistDirlist(), could not list %s"%(oroot)
+            print("error in getRunlistDirlist(), could not list %s"%(oroot))
             return self.RLD
         
         for i in rl_raw:
@@ -692,7 +692,7 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
                 fp = os.path.normpath( os.path.abspath( oroot+os.path.sep+i))
                 if os.path.exists(fp) and os.path.isdir(fp):
                     self.RLD[fp] = {}
-        self.RLK = self.RLD.keys()
+        self.RLK = list(self.RLD.keys())
         self.RLK.sort( str_cmp_desc )
         return self.RLD
 
@@ -714,7 +714,7 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
     # ---------------------
     def viewList(self):
         self.getRunlistDirlist()
-        basePath = os.path.dirname( os.path.commonprefix( self.RLD.keys() ) )
+        basePath = os.path.dirname( os.path.commonprefix( list(self.RLD.keys()) ) )
         html  = ""
         html += "<table id='listing'\n"
         html += "<tr>\n"
@@ -723,7 +723,7 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
                 "  <th>Link</th>\n"
         html += "</tr>\n"
         
-        keyList = self.RLD.keys()
+        keyList = list(self.RLD.keys())
         keyList.sort(str_cmp_desc)
         for k in keyList:
             p1 = k[ len(basePath)+1: ]
@@ -747,7 +747,7 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
         oroot = self.options["oroot"]
         opath = os.path.normpath(os.path.abspath(oroot+os.path.sep+str(theRun)))
         fileList = self.getTestsFromRun( opath )
-        fileListKeys = fileList.keys()
+        fileListKeys = list(fileList.keys())
         fileListKeys.sort()
         self.getRunlistDirlist()
         html  = ""
@@ -755,15 +755,15 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
             ifile = opath+os.path.sep+fileList[i]
             try:
                 xml = ElementTree.parse(ifile).getroot()
-            except ExpatError,e:
-                print "Error parsing %s in www_offlineBroser.viewRun()"%(ifile)
-                print "\tmsg:",e
+            except ExpatError as e:
+                print("Error parsing %s in www_offlineBroser.viewRun()"%(ifile))
+                print("\tmsg:",e)
             if xml.attrib.get("pBatchID",None)==focus:
                 fileListXML[i] = xml
             elif "b"+str(xml.attrib.get("pBatchID",None))==focus:
                 fileListXML[i] = xml
         del fileListKeys
-        fileListKeys = fileListXML.keys()
+        fileListKeys = list(fileListXML.keys())
         fileListKeys.sort()
         
         html += "<table id='results'>\n"
@@ -785,7 +785,7 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
             # Get shortDescription from the results
             desc = fileListXML[i].find("shortDescription")
             if desc != None:
-                desc = string.lstrip(desc.text)
+                desc = desc.text.lstrip()
                 desc = desc[:60]
             if desc == None or desc == "":
                 desc = file	    
@@ -858,15 +858,15 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
             if descOk == False:
                 desc = f
                 
-            if i.attrib.has_key("testID"):
+            if "testID" in i.attrib:
                 s = i.attrib.get("status","s")
                 testList[ i.attrib.get("testID") ] = [p,f,s,desc]
-            elif i.attrib.has_key("batchID"):
+            elif "batchID" in i.attrib:
                 bID = i.attrib.get("batchID","")
                 s   = i.attrib.get("status","s")
                 (nP,nF) = self.r_sum_batch(opath,fileList,"b"+bID)
                 batchList[ i.attrib.get("batchID") ] = [p,f,nP,nF,s,desc]
-            elif i.attrib.has_key("status") and i.attrib.has_key("ID"):
+            elif "status" in i.attrib and "ID" in i.attrib:
                 id = i.attrib.get("ID","-99")
                 s  = i.attrib.get("status","s")
                 testList[ id ] = [p,f,s,desc]
@@ -888,7 +888,7 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
         html += "  <th colspan=1 class='directory'>Path</th>\n"
         html += "  <th colspan=1>Test File</th>\n"
         html += "</tr>\n"
-        batchListKeys = batchList.keys()
+        batchListKeys = list(batchList.keys())
         batchListKeys.sort()
         for i in batchListKeys:
             nPass  = batchList[i][2]
@@ -906,7 +906,7 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
             html += "  <td>&nbsp;<a HREF=\"saved?viewRun=%s&focus=%s\">%s</a></td>\n"% \
                        (arg,"b"+i,desc)
             html += "</tr>\n"
-        testListKeys = testList.keys()
+        testListKeys = list(testList.keys())
         testListKeys.sort()
         for i in testListKeys:
             status  = testList[i][2]
@@ -981,7 +981,7 @@ class www_saved_html(resource.Resource,libdebug.debuggable):
         
         # MAIN
         html += "<div id='main'>\n"
-        if request.args.has_key("viewRun") and request.args.has_key("focus"):
+        if "viewRun" in request.args and "focus" in request.args:
             run_arg = request.args["viewRun"][0]
             foc_arg = request.args["focus"][0]
             if foc_arg == "root":
@@ -1037,7 +1037,7 @@ class www_main_html(resource.Resource,libdebug.debuggable):
             fullFile = dirPath +"/"+file
             if os.path.isfile(fullFile):
                 if re.match(".*\.((apt)|(apb))$",file):	        
-                    if not arg.has_key(dirPath):
+                    if dirPath not in arg:
                         arg[dirPath]=[]
                     arg[dirPath].append(file)
 
@@ -1046,11 +1046,11 @@ class www_main_html(resource.Resource,libdebug.debuggable):
     #
     def scan(self):
         self.printDebug("[->]\twww_main_html.scan()")
-        if self.options.has_key('iroot'): 
+        if 'iroot' in self.options: 
             os.path.walk(self.options['iroot'],self.f_detectFiles,self.fileHash)
         else:
-            print "ERROR! 'iroot' not defined in self.options.subOptions\n" \
-                  "\tIn file httptools.py :: scan()"
+            print("ERROR! 'iroot' not defined in self.options.subOptions\n" \
+                  "\tIn file httptools.py :: scan()")
             exit(1)
             os.path.walk('./',self.f_detectFiles,self.fileHash)
         self.printDebug("[<-]\twww_main_html.scan()")
@@ -1067,7 +1067,7 @@ class www_main_html(resource.Resource,libdebug.debuggable):
         js2 = ""
         js3 = "function chkAll() {\n"
         js4 = "function unchkAll() {\n"
-        dirList = self.fileHash.keys()
+        dirList = list(self.fileHash.keys())
         dirList.sort()
         for dir in dirList:
             j = 1
@@ -1163,7 +1163,7 @@ class www_main_html(resource.Resource,libdebug.debuggable):
         html += "Select All</tr>\n"
         html += "</tr>\n"
         i=1
-        dirList = self.fileHash.keys()
+        dirList = list(self.fileHash.keys())
         dirList.sort()
         for dir in dirList:
             # build up 'opts' field for checkbox
@@ -1421,7 +1421,7 @@ class www_running_html(resource.Resource, libdebug.debuggable):
                                                       'ERROR: NO FILENAME EXISTS')
             path = os.path.split(fullname)[0]
             fname= os.path.split(fullname)[1]
-            if not testFileMap.has_key(path):
+            if path not in testFileMap:
                 testFileMap[path] = []
             testFileMap[path].append((fname,testID))
         # append batch info to the list here as well
@@ -1431,7 +1431,7 @@ class www_running_html(resource.Resource, libdebug.debuggable):
                     "ERROR: NO FILENAME ATTRIBUTE!")
             path = os.path.split(fullname)[0]
             fname= os.path.split(fullname)[1]
-            if not testFileMap.has_key(path):
+            if path not in testFileMap:
                 testFileMap[path]=[]
             testFileMap[path].append((fname,batchID))
 
@@ -1446,7 +1446,7 @@ class www_running_html(resource.Resource, libdebug.debuggable):
         html += "</tr>\n"
         
         # fill in rows.
-        dirList = testFileMap.keys()
+        dirList = list(testFileMap.keys())
         dirList.sort()
         for idir in dirList:
             # print out directory line.
@@ -1469,7 +1469,7 @@ class www_running_html(resource.Resource, libdebug.debuggable):
                 status = testData.get('status','UNKNOWN')
                 desc   = testData.get('shortDescription')
                 if desc != None:
-                    desc = string.lstrip(desc.text)
+                    desc = desc.text.lstrip()
                     desc = desc[:60]
                 if desc == None or desc == "":
                     desc = ifile[0]
@@ -1487,7 +1487,7 @@ class www_running_html(resource.Resource, libdebug.debuggable):
                 if status== '': status = 'RUNNING'
                 desc = self.WB.TD.getBatch(ifile[1])[3].find("shortDescription")
                 if desc != None:
-                    desc = string.lstrip(desc.text)
+                    desc = desc.text.lstrip()
                     desc = desc[:60]
                 if desc == None or desc == "":
                     desc = ifile[0]
@@ -1534,7 +1534,7 @@ class www_running_html(resource.Resource, libdebug.debuggable):
             fullName = self.WB.TD.getTest(testID).get('filename',\
                                                       'ERROR: NO FILENAME EXISTS');
             (path,fname) = os.path.split(fullName)
-            if not testFileMap.has_key(path):
+            if path not in testFileMap:
                 testFileMap[path] = []
             testFileMap[path].append((fname,testID))
         batchList = self.WB.TD.getSubBatchesByBatch(batchID)
@@ -1542,10 +1542,10 @@ class www_running_html(resource.Resource, libdebug.debuggable):
             fullname = self.WB.TD.getBatch(batchID)[3].get('filename',\
                                                            "ERROR: NO FILENAME ATTRIB!")
             (path,fname) = os.path.split(fullname)
-            if not testFileMap.has_key(path):
+            if path not in testFileMap:
                 testFileMap[path]=[]
             testFileMap[path].append((fname,batchID))
-        dirList = testFileMap.keys()
+        dirList = list(testFileMap.keys())
         dirList.sort()
         for idir in dirList:
             # print out directory line.
@@ -1605,10 +1605,10 @@ class www_running_html(resource.Resource, libdebug.debuggable):
         
         # BODY :: CONTENTS
         html += "<div id=\"main\">\n"
-        if request.args.has_key('batchID'):
+        if 'batchID' in request.args:
             batchID = int(request.args['batchID'][0])
             html += self.genBatchTable(batchID)
-        elif request.args.has_key('testID'):
+        elif 'testID' in request.args:
             testID  = int(request.args['testID'][0])
             html += genTestResultTableFromElement(testID, self.WB.TD.getTest(testID))
         else:
@@ -1650,7 +1650,7 @@ class www_session_html(resource.Resource, libdebug.debuggable):
                                 'ERROR: NO FILENAME EXISTS')
             path = os.path.split(fullname)[0]
             fname= os.path.split(fullname)[1]
-            if not testFileMap.has_key(path):
+            if path not in testFileMap:
                 testFileMap[path] = []
             testFileMap[path].append((fname,testID))
         # append batch info to the list here as well
@@ -1660,7 +1660,7 @@ class www_session_html(resource.Resource, libdebug.debuggable):
                     "ERROR: NO FILENAME ATTRIBUTE!")
             path = os.path.split(fullname)[0]
             fname= os.path.split(fullname)[1]
-            if not testFileMap.has_key(path):
+            if path not in testFileMap:
                 testFileMap[path]=[]
             testFileMap[path].append((fname,batchID))
             
@@ -1675,7 +1675,7 @@ class www_session_html(resource.Resource, libdebug.debuggable):
         html += "</tr>\n"
         
         # fill in rows.
-        dirList = testFileMap.keys()
+        dirList = list(testFileMap.keys())
         dirList.sort()
         for idir in dirList:
             # print out directory line.
@@ -1697,7 +1697,7 @@ class www_session_html(resource.Resource, libdebug.debuggable):
                 status = testData.get('status','UNKNOWN')
                 desc   = testData.get('shortDescription')
                 if desc != None:
-                    desc = string.lstrip(desc.text)
+                    desc = desc.text.lstrip()
                     desc = desc[:60]
                 if desc == None or desc == "":
                     desc = ifile[0]
@@ -1715,7 +1715,7 @@ class www_session_html(resource.Resource, libdebug.debuggable):
                 if status== '': status = 'RUNNING'
                 desc = self.WB.TD.getBatch(ifile[1])[3].find("shortDescription")
                 if desc != None:
-                    desc = string.lstrip(desc.text)
+                    desc = desc.text.lstrip
                     desc = desc[:60]
                 if desc == None or desc == "":
                     desc = ifile[0]
@@ -1763,7 +1763,7 @@ class www_session_html(resource.Resource, libdebug.debuggable):
             fullName = self.WB.TD.getTest(testID).get('filename',\
                                                       'ERROR: NO FILENAME EXISTS');
             (path,fname) = os.path.split(fullName)
-            if not testFileMap.has_key(path):
+            if path not in testFileMap:
                 testFileMap[path] = []
             testFileMap[path].append((fname,testID))
         batchList = self.WB.TD.getSubBatchesByBatch(batchID)
@@ -1771,10 +1771,10 @@ class www_session_html(resource.Resource, libdebug.debuggable):
             fullname = self.WB.TD.getBatch(batchID)[3].get('filename', \
                                                     "ERROR: NO FILENAME ATTRIB!")
             (path,fname) = os.path.split(fullname)
-            if not testFileMap.has_key(path):
+            if path not in testFileMap:
                 testFileMap[path]=[]
             testFileMap[path].append((fname,batchID))
-        dirList = testFileMap.keys()
+        dirList = list(testFileMap.keys())
         dirList.sort()
         for idir in dirList:
             # print out directory line.
@@ -1805,7 +1805,8 @@ class www_session_html(resource.Resource, libdebug.debuggable):
         if len(runIDs)>0:
             runid = len(runIDs)-1
             while runid >= 0:
-                s = string.split(self.WB.TD.getRun(runid)[2],"T",1)
+                s = self.WB.TD.getRun(runid)[2]
+                s = s.split("T",1)
                 html += "<tr>\n"
                 html += "\t<td class='date'>%s</td>\n"%(s[0])    # date
                 html += "\t<td class='time'>%s</td>\n"%(s[1])    # time
@@ -1860,13 +1861,13 @@ class www_session_html(resource.Resource, libdebug.debuggable):
         
         # BODY :: CONTENTS
         html += "<div id=\"main\">\n"
-        if request.args.has_key('batchID'):
+        if 'batchID' in request.args:
             batchID = int(request.args['batchID'][0])
             html += self.genBatchTable(batchID)
-        elif request.args.has_key('testID'):
+        elif 'testID' in request.args:
             testID  = int(request.args['testID'][0])
             html += genTestResultTableFromElement(testID, self.WB.TD.getTest(testID))
-        elif request.args.has_key('runID'):
+        elif 'runID' in request.args:
             runID = int(request.args['runID'][0])
             html += self.genRunTable(runID)
         else:

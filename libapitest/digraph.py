@@ -22,7 +22,7 @@ This file contains an implementation of a directed graph class.
 #############################################################################
 
 
-from Queue import Queue
+from queue import Queue
 
 class digraph:
     """ A directed graph class. """
@@ -61,19 +61,19 @@ class digraph:
     #----------------------------------------
     def add_vertex(self, vid, data=None):
         """ Add a vertex to G with optional payload """
-        if self.debug: print "[->] %s.add_vertex(%s,%s)"%(self.name,`vid`,`data`)
-        if (not self.V.has_key(vid)) and (not self._V.has_key(vid)):
+        if self.debug: print("[->] %s.add_vertex(%s,%s)"%(self.name,repr(vid),repr(data)))
+        if (vid not in self.V) and (vid not in self._V):
             self.V[vid] = ([],[],data)
         else:
-            print "graph.add_vertex() error:: vertex \"%s\" already exists!"%(str(vid))
+            print("graph.add_vertex() error:: vertex \"%s\" already exists!"%(str(vid)))
 
     #----------------------------------------
     # del_vertex()
     #----------------------------------------
     def del_vertex(self, vid):
         """ Delete the vertex, vid, and all incoming and outgoing edges from G."""
-        if self.debug: print "[->] %s.del_vertex(%s)"%(self.name,`vid`)
-        edges = map(None, self.V[vid])
+        if self.debug: print("[->] %s.del_vertex(%s)"%(self.name,repr(vid)))
+        edges = list(self.V[vid])
         eid_i = edges[0][:]
         eid_o = edges[1][:]
         for edge in eid_i:
@@ -87,7 +87,7 @@ class digraph:
     #----------------------------------------
     def del_vertices(self, vid_list):
         """ Deletes all vertices in G from the list vid_list """
-        if self.debug: print "[->] %s.del_vertices(%s)"%(self.name,`vid_list`)
+        if self.debug: print("[->] %s.del_vertices(%s)"%(self.name,repr(vid_list)))
         for vid in vid_list:
             self.del_vertex(vid)
 
@@ -96,8 +96,8 @@ class digraph:
     #----------------------------------------
     def del_all_vertices(self):
         """ Delete all visible vertices from the digraph. """
-        if self.debug: print "[->] %s.del_all_vertices()"%(self.name)
-        for vid in self.V.keys():
+        if self.debug: print("[->] %s.del_all_vertices()"%(self.name))
+        for vid in list(self.V.keys()):
             self.del_vertex(vid)
 
     #----------------------------------------
@@ -105,8 +105,8 @@ class digraph:
     #----------------------------------------
     def del_all_edges(self):
         """ Delete all visible edges from the digraph. """
-        if self.debug: print "[->] %s.del_all_edges()"%(self.name)
-        for eid in self.E.keys():
+        if self.debug: print("[->] %s.del_all_edges()"%(self.name))
+        for eid in list(self.E.keys()):
             self.del_edge(eid)
 
     #----------------------------------------
@@ -114,7 +114,7 @@ class digraph:
     #----------------------------------------
     def clear(self):
         """ Delete all vertices and edges in G. """
-        if self.debug: print "[->] %s.clear()"%(self.name)
+        if self.debug: print("[->] %s.clear()"%(self.name))
         self.unhide_all()
         self.del_all_edges()
         self.del_all_vertices()
@@ -126,7 +126,7 @@ class digraph:
     #----------------------------------------
     def hide_vertex(self, vid):
         """ Hides vertex, vid, and incoming/outgoing edges from the visible digraph. """
-        if self.debug: print "[->] %s.hide_vertex(%s)"%(self.name,`vid`)
+        if self.debug: print("[->] %s.hide_vertex(%s)"%(self.name,repr(vid)))
         in_edges  = self.get_eid_list_by_dest(vid)
         out_edges = self.get_eid_list_by_source(vid)
         self._V[vid] = (self.V[vid],in_edges,out_edges)
@@ -158,8 +158,8 @@ class digraph:
     #----------------------------------------
     def unhide_vertex(self, vid):
         """ Unhide a vertex, given the vertex id. """
-        if self.debug: print "[->] %s.unhide_vertex(%s)"%(self.name,`vid`)
-        if self._V.has_key(vid):
+        if self.debug: print("[->] %s.unhide_vertex(%s)"%(self.name,repr(vid)))
+        if vid in self._V:
             self.V[vid] = self._V[vid][0]
             for eid in self._V[vid][1]:
                 self.unhide_edge(eid)
@@ -172,8 +172,8 @@ class digraph:
     #----------------------------------------
     def unhide_edge(self, eid):
         """ Unhide an edge, given its edge id."""
-        if self.debug: print "[->] %s.unhide_edge(%s)"%(self.name,`eid`)
-        if self._E.has_key(eid):
+        if self.debug: print("[->] %s.unhide_edge(%s)"%(self.name,repr(eid)))
+        if eid in self._E:
             edge = self._E[eid]
             self.E[eid] = edge
             self.V[edge[0]][1].append(eid)
@@ -185,7 +185,7 @@ class digraph:
     #----------------------------------------
     def unhide_edge_by_vid(self, v1id,v2id):
         """ Unhide an edge, given the vertex ids of its head and tail. """
-        if self.debug: print "[->] %s.unhide_edge_by_vid(%s,%s)"%(self.name,`v1id`,`v2id`)
+        if self.debug: print("[->] %s.unhide_edge_by_vid(%s,%s)"%(self.name,repr(v1id),repr(v2id)))
         edge_list = self.get_hidden_eid_list(v1id,v2id)
         for edge in edge_list:
             self.unhide_edge(edge)
@@ -195,10 +195,10 @@ class digraph:
     #----------------------------------------
     def unhide_all(self):
         """ Unhide all vertices and edges in the digraph. """
-        if self.debug: print "[->] %s.unhide_all()"%(self.name)
-        for vid in self._V.keys():
+        if self.debug: print("[->] %s.unhide_all()"%(self.name))
+        for vid in list(self._V.keys()):
             self.unhide_vertex(vid)
-        for eid in self._E.keys():
+        for eid in list(self._E.keys()):
             self.unhide_edge(eid)
 
     #----------------------------------------
@@ -234,26 +234,26 @@ class digraph:
     #----------------------------------------
     def vertex_list(self):
         """ Returns the list of nodeids of all unhidden nodes in G """
-        return self.V.keys()
+        return list(self.V.keys())
 
     #----------------------------------------
     # edge_list()
     #----------------------------------------
     def edge_list(self):
         """ Returns the list of eid's of all unhidden edges in G """
-        return self.E.keys()
+        return list(self.E.keys())
 
     #----------------------------------------
     # has_vertex(vid)
     #----------------------------------------
     def has_vertex(self, vid):
         """ Does vid exist in G?  Returns True or False """
-        if self.debug: print "[->] %s.has_vertex(%s)"%(self.name,`vid`)
-        return self.V.has_key(vid)
+        if self.debug: print("[->] %s.has_vertex(%s)"%(self.name,repr(vid)))
+        return vid in self.V
 
     def get_vertex(self, vid):
         """ Returns the vertex given by `vid` """
-        if self.debug: print "[->] %s.get_vertex(%s)"%(self.name,`vid`)
+        if self.debug: print("[->] %s.get_vertex(%s)"%(self.name,repr(vid)))
         if self.has_vertex(vid):
             return self.V[vid]
         else:
@@ -261,7 +261,7 @@ class digraph:
 
     def get_vertex_data(self, vid):
         """ Returns the vertex data attached to vertex `vid` """
-        if self.debug: print "[->] %s.get_vertex_data(%s)"%(self.name,`vid`)
+        if self.debug: print("[->] %s.get_vertex_data(%s)"%(self.name,repr(vid)))
         if self.has_vertex(vid):
             return self.get_vertex(vid)[2]
         else:
@@ -272,7 +272,7 @@ class digraph:
     #----------------------------------------
     def has_edge(self, v1id, v2id):
         """ Does the edge v1id -> v2id exist? Returns True or False """
-        if self.debug: print "[->] %s.has_edge(%s,%s)"%(self.name,`v1id`,`v2id`)
+        if self.debug: print("[->] %s.has_edge(%s,%s)"%(self.name,repr(v1id),repr(v2id)))
         return (len(self.get_eid_list(v1id,v2id)) > 0)
 
     #----------------------------------------
@@ -280,12 +280,12 @@ class digraph:
     #----------------------------------------
     def add_edge(self, v1id, v2id, data=None):
         """ Add an edge from v1id -> v2id into G. data is optional (edgeweight) """
-        if self.debug: print "[->] %s.add_edge(%s,%s, %s)"%(self.name,`v1id`,`v2id`,`data`)
+        if self.debug: print("[->] %s.add_edge(%s,%s, %s)"%(self.name,repr(v1id),repr(v2id),repr(data)))
         eid = self.eid
         self.eid += 1
         self.E[eid] = (v1id, v2id, data)
-        m1d = map(None, self.V[v1id])
-        m2d = map(None, self.V[v2id])
+        m1d = list(self.V[v1id])
+        m2d = list(self.V[v2id])
         m1d[1].append(eid)
         m2d[0].append(eid)
         return eid
@@ -295,41 +295,39 @@ class digraph:
     #----------------------------------------
     def del_edge_by_vid(self, v1id, v2id):
         """ Delete an edge from the digraph, given the vertex ids of the head and tail. """
-        if self.debug: print "[->] %s.del_edge_by_vid(%s,%s)"%(self.name,`v1id`,`v2id`)
+        if self.debug: print("[->] %s.del_edge_by_vid(%s,%s)"%(self.name,repr(v1id),repr(v2id)))
         eid = self.get_eid(v1id,v2id)
         # print eid
         if eid != None:
             self.del_edge(eid)
         else:
-            print "del_edge_by_vid(%s,%s) :: Edge does not exist!"%(`v1id`,`v2id`)
+            print("del_edge_by_vid(%s,%s) :: Edge does not exist!"%(repr(v1id),repr(v2id)))
 
     #----------------------------------------
     # del_edge(eid)
     #----------------------------------------
     def del_edge(self, eid):
         """ Delete an edge, given the edge id. """
-        if self.debug: print "[->] %s.del_edge(%s)"%(self.name,`eid`)
-        if self.E.has_key(eid):
-            v1id = map(None, self.E[eid])[0]
-            v2id = map(None, self.E[eid])[1]
-            v1data = map(None, self.V[v1id])
-            v2data = map(None, self.V[v2id])
+        if self.debug: print("[->] %s.del_edge(%s)"%(self.name,repr(eid)))
+        if eid in self.E:
+            v1id = list(self.E[eid])[0]
+            v2id = list(self.E[eid])[1]
+            v1data = list(self.V[v1id])
+            v2data = list(self.V[v2id])
             v1data[1].remove(eid)
             v2data[0].remove(eid)
             del self.E[eid]
         else:
-            print "del_edge(%s) :: no edge exists with that eid!"%(`eid`)
+            print("del_edge(%s) :: no edge exists with that eid!"%(repr(eid)))
 
     #----------------------------------------
     # get_eid_list(v1id, v2id)
     #----------------------------------------
     def get_eid_list(self, v1id, v2id):
         """ Returns list of edges going from v1id to v2id """
-        if self.debug: print "[->] %s.get_eid_list(%s,%s)"%(self.name,`v1id`,`v2id`)
+        if self.debug: print("[->] %s.get_eid_list(%s,%s)"%(self.name,repr(v1id),repr(v2id)))
         eid_list = []
-        eid_list = filter( \
-            lambda eid: self.E[eid][0]==v1id and self.E[eid][1]==v2id,\
-            self.E.keys() )
+        eid_list = [eid for eid in list(self.E.keys()) if self.E[eid][0]==v1id and self.E[eid][1]==v2id]
         return eid_list
 
     #----------------------------------------
@@ -337,11 +335,9 @@ class digraph:
     #----------------------------------------
     def get_hidden_eid_list(self, v1id, v2id):
         """ Returns list of edges going from v1id to v2id that are hidden """
-        if self.debug: print "[->] %s.get_hidden_eid_list(%s,%s)"%(self.name,`v1id`,`v2id`)
+        if self.debug: print("[->] %s.get_hidden_eid_list(%s,%s)"%(self.name,repr(v1id),repr(v2id)))
         eid_list = []
-        eid_list = filter( \
-            lambda eid: self._E[eid][0]==v1id and self._E[eid][1]==v2id,\
-            self._E.keys() )
+        eid_list = [eid for eid in list(self._E.keys()) if self._E[eid][0]==v1id and self._E[eid][1]==v2id]
         return eid_list
 
     #----------------------------------------
@@ -349,7 +345,7 @@ class digraph:
     #----------------------------------------
     def get_eid(self, v1id, v2id):
         """ Return the first edge found from v1id->v2id """
-        if self.debug: print "[->] %s.get_eid(%s,%s)"%(self.name,`v1id`,`v2id`)
+        if self.debug: print("[->] %s.get_eid(%s,%s)"%(self.name,repr(v1id),repr(v2id)))
         eid_list = self.get_eid_list(v1id, v2id)
         if len(eid_list):  return eid_list[0]
         else:              return None
@@ -359,8 +355,8 @@ class digraph:
     #----------------------------------------
     def get_eid_list_by_source(self, v1id):
         """ Return a list of edges whose source vertex id is specified by v1id. """
-        if self.debug: print "[->] %s.get_eid_list_by_source(%s)"%(self.name,`v1id`)
-        eid_list = filter( lambda eid : self.E[eid][0]==v1id, self.E.keys() )
+        if self.debug: print("[->] %s.get_eid_list_by_source(%s)"%(self.name,repr(v1id)))
+        eid_list = [eid for eid in list(self.E.keys()) if self.E[eid][0]==v1id]
         return eid_list
 
     #----------------------------------------
@@ -369,8 +365,8 @@ class digraph:
     def get_hidden_eid_list_by_source(self,v1id):
         """ Return a list of hidden edge ids whose source vertex id
         is specified by v1id """
-        if self.debug: print "[->] %s.get_hidden_eid_list_by_source(%s)"%(self.name,`v1id`)
-        eid_list = filter( lambda eid : self._E[eid][0]==v1id, self.E.keys() )
+        if self.debug: print("[->] %s.get_hidden_eid_list_by_source(%s)"%(self.name,repr(v1id)))
+        eid_list = [eid for eid in list(self.E.keys()) if self._E[eid][0]==v1id]
         return eid_list
 
     #----------------------------------------
@@ -380,8 +376,8 @@ class digraph:
         """ Return a list of visible edge ids whose destination vertex id
         is specified by v2id.
         """
-        if self.debug: print "[->] %s.get_eid_list_by_dest(%s)"%(self.name,`v2id`)
-        eid_list = filter( lambda eid : self.E[eid][1]==v2id, self.E.keys() )
+        if self.debug: print("[->] %s.get_eid_list_by_dest(%s)"%(self.name,repr(v2id)))
+        eid_list = [eid for eid in list(self.E.keys()) if self.E[eid][1]==v2id]
         return eid_list
     
     #----------------------------------------
@@ -391,8 +387,8 @@ class digraph:
         """ Return a list of hidden edge ids whose destination vertex id
         is specified by v2id.
         """
-        if self.debug: print "[->] %s.get_hidden_eid_list_by_dest(%s)"(self.name,`v2id`)
-        eid_list = filter( lambda eid : self._E[eid][1]==v2id,self.E.keys() )
+        if self.debug: print("[->] %s.get_hidden_eid_list_by_dest(%s)"(self.name,repr(v2id)))
+        eid_list = [eid for eid in list(self.E.keys()) if self._E[eid][1]==v2id]
         return eid_list
 
     #----------------------------------------
@@ -415,7 +411,7 @@ class digraph:
     #----------------------------------------
     def indegree(self, vid):
         """ Return the count of incident edges on VID. """
-        if self.V.has_key(vid):
+        if vid in self.V:
             return len( self.V[vid][0] )
         else:
             return 0
@@ -425,7 +421,7 @@ class digraph:
     #----------------------------------------
     def outdegree(self, vid):
         """ Return the count of outgoing edges from VID. """
-        if self.V.has_key(vid):
+        if vid in self.V:
             return len( self.V[vid][1] )
         else:
             return 0
@@ -444,7 +440,7 @@ class digraph:
     def dump_graphviz(self):
         """ return a string with the graph info in Graphviz .dot format """
         s = "digraph \"%s\" {\n"%(self.name)
-        for vid in self.V.iterkeys():
+        for vid in self.V.keys():
             eid_list = self.get_eid_list_by_source(vid)
             for eid in eid_list:
                 s += "\"%s\" -> \"%s\";\n"%(vid,self.get_edge_dest(eid))
@@ -456,11 +452,11 @@ class digraph:
     #----------------------------------------
     def __str__(self):
         """ Return a compact string representation of the digraph. """
-        s = "Graph: %s\n"%(`self.name`)
-        for vid in self.V.iterkeys():
-            s += "  %-20s\t(%10s) -> { "%(`vid`,`self.V[vid][2]`)
+        s = "Graph: %s\n"%(repr(self.name))
+        for vid in self.V.keys():
+            s += "  %-20s\t(%10s) -> { "%(repr(vid),repr(self.V[vid][2]))
             for eid in self.get_eid_list_by_source(vid):
-                s += "%s(%s), "%(`self.get_edge_dest(eid)`, `self.get_edge_data(eid)`)
+                s += "%s(%s), "%(repr(self.get_edge_dest(eid)), repr(self.get_edge_data(eid)))
             s += '}\n'
         return s
 
@@ -470,13 +466,13 @@ class digraph:
     def pretty_print(self):
         """ Return a string based representation of the digraph. """
         s = ""
-        for vid in self.V.iterkeys():
-            s += "V: %s\n"%(`vid`)
+        for vid in self.V.keys():
+            s += "V: %s\n"%(repr(vid))
 
             s += "   in ["
             eid_list = self.get_eid_list_by_dest(vid)
             for eid in eid_list:
-                s += " %s(%s)"%(`self.get_edge_source(eid)`,`self.get_edge_data(eid)`)
+                s += " %s(%s)"%(repr(self.get_edge_source(eid)),repr(self.get_edge_data(eid)))
             s += "]\n"
         return s
 
@@ -486,11 +482,11 @@ class digraph:
     #----------------------------------------
     def topological_sort(self):
         """ Return a list of vertex ids, sorted topologically. """
-        if self.debug: print "[->] %s.topological_sort()"%(self.name)
+        if self.debug: print("[->] %s.topological_sort()"%(self.name))
         v_topolist = []
         Q          = Queue()
         v_indegree = {}
-        for vid in self.V.iterkeys():
+        for vid in self.V.keys():
             indeg = self.indegree(vid)
             if indeg==0:
                 Q.put(vid)
@@ -506,7 +502,7 @@ class digraph:
                 if v_indegree[dest]==0:
                     Q.put(dest)
         if len(v_topolist) != len(self.V):
-            print "WARNING: digraph '%s' appears to be cyclic!"%(self.name)
+            print("WARNING: digraph '%s' appears to be cyclic!"%(self.name))
         return v_topolist
 
 
@@ -516,7 +512,7 @@ class digraph:
 # Testing function.  This is executed if we run python digraph.py
 #----------------------------------------------------------------------------------
 if __name__ == "__main__":
-    print "Testing digraph module"
+    print("Testing digraph module")
 
     G = digraph()
     G.set_name("G")
@@ -536,9 +532,9 @@ if __name__ == "__main__":
     G.add_edge('g','b')
     G.add_edge('e','f')
 
-    print G.__str__()
-    print "Topological Order:", G.topological_sort()
-    print ""
+    print(G.__str__())
+    print("Topological Order:", G.topological_sort())
+    print("")
 
     G_2 = digraph()
     G_2.set_name("G_2")
@@ -553,8 +549,8 @@ if __name__ == "__main__":
     G_2.add_edge('b','d')
 
 
-    print G_2.__str__()
-    print "Topological order:", G_2.topological_sort()
-    print ""
+    print(G_2.__str__())
+    print("Topological order:", G_2.topological_sort())
+    print("")
 
 #EOF

@@ -25,7 +25,7 @@ Cascading stylesheet classes.
 from twisted.web import resource
 from twisted.internet import reactor
 import string
-import libdebug
+from . import libdebug
 
 class html_css_header:
     """ loads the correct CSS stylesheets """

@@ -25,14 +25,14 @@ Test Handler class
 # $Id: testHandler.py,v 1.24 2005/04/12 23:51:08 wcmclen Exp $
 #
 
-import systools
-import libdebug
-import libapitest
-import twistedTools
+from . import systools
+from . import libdebug
+from . import libapitest
+from . import twistedTools
 import os
 import os.path
 import string
-from exceptions import OSError
+#from exceptions import OSError
 from signal import SIGTERM
 from twisted.internet import reactor,defer
 
@@ -257,9 +257,9 @@ class testHandler(libapitest.testHandlerBase):
             try:
                 os.kill(pid, SIGTERM)
                 self.set_timeoutFlag()
-            except OSError, msg:
-                print "Could not kill process (%d) with signal (%d)"%(pid,SIGTERM)
-                print "\tmsg:\"%s\""%(msg)
+            except OSError as msg:
+                print("Could not kill process (%d) with signal (%d)"%(pid,SIGTERM))
+                print("\tmsg:\"%s\""%(msg))
 
 
     #--------------------------------------------------------------------------
@@ -329,14 +329,14 @@ class testHandler(libapitest.testHandlerBase):
         theCommand = theShell
 
         # lots of debugging
-        self.printDebug("\tself.WDIR     =\t%s"%(`self.WDIR`))
-        self.printDebug("\tself.TSDIR    =\t%s"%(`self.TSDIR`))
-        self.printDebug("\ttheScriptName =\t%s"%(`theScriptName`))
-        self.printDebug("\ttheScriptBody =\t%s"%(`theScriptBody`))
-        self.printDebug("\ttheShell      =\t%s"%(`theShell`))
-        self.printDebug("\targuments     =\t%s"%(`arguments`))
-        self.printDebug("\tstdin         =\t%s"%(`stdin`))
-        self.printDebug("\ttheCommand    =\t%s"%(`theCommand`))
+        self.printDebug("\tself.WDIR     =\t%s"%(repr(self.WDIR)))
+        self.printDebug("\tself.TSDIR    =\t%s"%(repr(self.TSDIR)))
+        self.printDebug("\ttheScriptName =\t%s"%(repr(theScriptName)))
+        self.printDebug("\ttheScriptBody =\t%s"%(repr(theScriptBody)))
+        self.printDebug("\ttheShell      =\t%s"%(repr(theShell)))
+        self.printDebug("\targuments     =\t%s"%(repr(arguments)))
+        self.printDebug("\tstdin         =\t%s"%(repr(stdin)))
+        self.printDebug("\ttheCommand    =\t%s"%(repr(theCommand)))
 
         if scriptOK:
             if theUID != None:
@@ -377,9 +377,9 @@ class testHandler(libapitest.testHandlerBase):
             try:
                 os.kill(self.pid, SIGTERM)
                 self.set_timeoutFlag()
-            except OSError, msg:
-                print "Could not kill process (%d) with signal (%d)"%(self.pid,SIGTERM)
-                print "\tmsg:\"%s\""%(msg)
+            except OSError as msg:
+                print("Could not kill process (%d) with signal (%d)"%(self.pid,SIGTERM))
+                print("\tmsg:\"%s\""%(msg))
 
 
 
@@ -397,7 +397,7 @@ class testHandler(libapitest.testHandlerBase):
         try:
             from sss.ssslib import comm_lib, ConnectError
         except:
-            print "IMPORT ERROR: Could not import sss.ssslib modules!"
+            print("IMPORT ERROR: Could not import sss.ssslib modules!")
             reactor.callLater(0, self.procReturned, ret)
             return()
 
@@ -410,7 +410,7 @@ class testHandler(libapitest.testHandlerBase):
         
         try:
             handle=comm.ClientInit(destination)
-        except ConnectError, msg:
+        except ConnectError as msg:
             ret['ERROR'] = "Error connecting to '%s': %s"%(destination,msg)
             reactor.callLater(0, self.procReturned, ret)
             return()
@@ -500,15 +500,15 @@ class testHandler(libapitest.testHandlerBase):
 # to access, execute $>python thisfile.py
 #===========================================================================
 def __cb__(result=None):
-    print "[->]\t__cb__()"
-    print "\t%s"%(`result`)
-    print "[<-]\t__cb__()"
+    print("[->]\t__cb__()")
+    print("\t%s"%(repr(result)))
+    print("[<-]\t__cb__()")
 
 
 if __name__ == "__main__":
-    print "testing testHandler.py... "
+    print("testing testHandler.py... ")
     
-    print "\tuname = ", getUnameFromUID( 27030 )
+    print("\tuname = ", getUnameFromUID( 27030 ))
      
     ##reactor.callLater(10, reactor.stop)
     ##reactor.run()

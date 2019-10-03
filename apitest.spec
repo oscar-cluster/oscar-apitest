@@ -1,6 +1,6 @@
 %define name apitest
-%define version 1.0.2
-%define release 3
+%define version 1.0.3
+%define release 1
 #define _unpackaged_files_terminate_build 0
 
 #{expand:%%define py_ver %(python -V 2>&1| awk '{print $2}')}
@@ -18,18 +18,11 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 # Architecture
 BuildArch: noarch
 
-Requires: python-twisted-core >= 1.3
-Requires: python-twisted-web >= 1.3
-BuildRequires: python-twisted-core >= 1.3
-BuildRequires: python-twisted-web >= 1.3
+Requires: python3-twisted
+BuildRequires: python3-twisted
 
-#%if 0%(echo %{?python_version}|tr '.' '0') < 206
-#Requires: python-elementtree
-#BuildRequires: python-elementtree
-#%endif
-
-Requires: python >= 2.6
-BuildRequires: python >= 2.6
+Requires: python3 >= 3.4
+BuildRequires: python3 >= 3.4
 
 
 %description
@@ -45,7 +38,7 @@ A test driver application.
 
 %build
 echo "==========[ BUILD ]===================================="
-echo "python%{python_version}"
+echo "python%{python3_version}"
 echo "buildroot=%{buildroot}"
 #define sitepackages %{_prefix}/%{_lib}/python%{py_libver}/site-packages
 #python%{py_libver} setup.py build
@@ -55,14 +48,14 @@ echo "buildroot=%{buildroot}"
 echo "==========[ INSTALL ]=================================="
 echo %{buildroot}
 #define doc_prefix /usr/share/doc/apitest
-%{__python} setup.py install --no-compile --prefix=%{buildroot}%{_prefix}/ --install-lib=%{buildroot}%{python_sitelib}
+%{__python3} setup.py install --no-compile --prefix=%{buildroot}%{_prefix}/ --install-lib=%{buildroot}%{python3_sitelib}
 ###--install-data=%{buildroot}/%{doc_prefix}
 
 
 %files
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog doc/COPYING.LGPLv2.1
-%{python_sitelib}/*
+%{python3_sitelib}/*
 %{_docdir}/*
 %{_bindir}/*
 
@@ -72,6 +65,9 @@ echo "cleaning $RPM_BUILD_ROOT"
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Thu Oct  3 2019    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.3-1
+- Port to python3.
+
 * Tue Jul  1 2014    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.2-3
 - Finegrained Requirements regarding python-twisted (now only core and web are required).
   This is needed to CentOS7-beta which has incomplete python-twisted.
