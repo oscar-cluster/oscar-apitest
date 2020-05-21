@@ -2,6 +2,7 @@
 %define version 1.0.3
 %define release 1
 #define _unpackaged_files_terminate_build 0
+%define is_suse %(test -f /etc/SuSE-release && echo 1 || echo 0)
 
 #{expand:%%define py_ver %(python -V 2>&1| awk '{print $2}')}
 #{expand:%%define py_libver %(python -V 2>&1| awk '{print $2}'|cut -d. -f1-2)}
@@ -18,9 +19,14 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 # Architecture
 BuildArch: noarch
 
-Requires: python3-twisted
-BuildRequires: python3-twisted
-
+%if 0%{?fedora} >= 16 || 0%{?rhel} >= 6
+Requires:	python3-twisted
+BuildRequires:	python3-twisted
+%endif
+%if 0%{?is_suse}%{?is_opensuse}
+Requires:	python3-Twisted
+BuildRequires:	python3-Twisted
+%endif
 Requires: python3 >= 3.4
 BuildRequires: python3 >= 3.4
 
