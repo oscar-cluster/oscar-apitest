@@ -1,6 +1,6 @@
 %define name apitest
 %define version 1.0.3
-%define release 1
+%define release 2
 #define _unpackaged_files_terminate_build 0
 %define is_suse %(test -f /etc/SuSE-release && echo 1 || echo 0)
 
@@ -51,6 +51,10 @@ echo "buildroot=%{buildroot}"
 %install
 echo "==========[ INSTALL ]=================================="
 echo %{buildroot}
+%if 0%{?is_suse}%{?is_opensuse}
+echo "Patching doc_dir for SuSE in setup.py"
+sed -i -e 's|doc_dir = "share/doc/apitest/"|doc_dir = "share/doc/packages/apitest/"|g' setup.py
+%endif
 #define doc_prefix /usr/share/doc/apitest
 %{__python3} setup.py install --no-compile --prefix=%{buildroot}%{_prefix}/ --install-lib=%{buildroot}%{python3_sitelib}
 ###--install-data=#{buildroot}/#{doc_prefix}
@@ -69,6 +73,9 @@ echo "cleaning $RPM_BUILD_ROOT"
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Thu May 21 2020    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.3-2
+- Add support for SuSE and openSuSE Leap.
+
 * Thu Oct  3 2019    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.3-1
 - Port to python3.
 
