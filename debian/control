@@ -1,7 +1,7 @@
 Source: apitest
 Section: oscar
 Priority: optional
-Maintainer   : Geoffroy Vallee <valleegr@ornl.gov>
+Maintainer: Geoffroy Vallee <valleegr@ornl.gov>
 Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.7.2
 
