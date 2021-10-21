@@ -1,12 +1,12 @@
 Source: apitest
 Section: oscar
 Priority: optional
-Maintainer: Geoffroy Vallee <valleegr@ornl.gov>
-Build-Depends: debhelper (>= 4.0.0)
-Standards-Version: 3.7.2
+Maintainer: Olivier Lahaye <olivier.lahaye@cea.fr>
+Build-Depends: python3-all, dh-python, python3-twisted debhelper (>= 12.0.0)
+Standards-Version: 4.2.1
 
 Package: apitest
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${misc:Depends} ${python3:Depends}
 Description: APITest
  APITest package for OSCAR.
