@@ -387,7 +387,7 @@ class digraph:
         """ Return a list of hidden edge ids whose destination vertex id
         is specified by v2id.
         """
-        if self.debug: print("[->] %s.get_hidden_eid_list_by_dest(%s)"(self.name,repr(v2id)))
+        if self.debug: print("[->] %s.get_hidden_eid_list_by_dest(%s)"%(self.name,repr(v2id)))
         eid_list = [eid for eid in list(self.E.keys()) if self._E[eid][1]==v2id]
         return eid_list
 
