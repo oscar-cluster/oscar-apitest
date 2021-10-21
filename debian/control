@@ -2,7 +2,7 @@ Source: apitest
 Section: oscar
 Priority: optional
 Maintainer: Olivier Lahaye <olivier.lahaye@cea.fr>
-Build-Depends: python3-all, dh-python, python3-twisted debhelper (>= 12.0.0)
+Build-Depends: python3-all, dh-python, python3-twisted, debhelper (>= 12.0.0)
 Standards-Version: 4.2.1
 
 Package: apitest
