@@ -93,9 +93,9 @@ def hexdigest(fname):
     """ Load a file and return an md5 digest. """
     md5obj = hashlib.md5()
     try:
-        f = file(fname,'rb')
+        f = open(fname,'rb')
     except:
-        return None
+        return "ErrorReadingFile"
     
     while True:
         d = f.read(8096)
