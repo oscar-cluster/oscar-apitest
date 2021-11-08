@@ -1,5 +1,17 @@
 apitest (1.0.2-1) hardy; urgency=low
 
+  * Fix python 3 port.
+
+ -- Olivier Lahaye <olivier.lahaye@cea.fr>  Mon, 08 Nov 2021 17:41:52 +0100
+
+apitest (1.0.3-1) hardy; urgency=low
+
+  * Port to python 3.
+
+ -- Olivier Lahaye <olivier.lahaye@cea.fr>  Thu, 03 Oct 2019 14:17:21 +0100
+
+apitest (1.0.2-1) hardy; urgency=low
+
   * New upstream version for OSCAR.
 
  -- Olivier Lahaye <olivier.lahaye@cea.fr>  Thu, 28 Nov 2013 18:09:09 +0100

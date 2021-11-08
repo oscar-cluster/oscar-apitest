@@ -1,6 +1,6 @@
 %define name apitest
-%define version 1.0.3
-%define release 2
+%define version 1.0.4
+%define release 1
 #define _unpackaged_files_terminate_build 0
 #define is_suse %(test -f /etc/SuSE-release && echo 1 || echo 0)
 %define is_suse %(grep -E "(suse)" /etc/os-release > /dev/null 2>&1 && echo 1 || echo 0)
@@ -75,6 +75,9 @@ echo "cleaning $RPM_BUILD_ROOT"
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Mon Nov 08 2021    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.4-1
+- Fix python3 port (2to3 forgot to replace the file() builtin).
+
 * Thu May 21 2020    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.3-2
 - Add support for SuSE and openSuSE Leap.
 
