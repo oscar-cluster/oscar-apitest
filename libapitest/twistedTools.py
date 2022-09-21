@@ -135,8 +135,8 @@ class processHandlerBase(protocol.ProcessProtocol, libdebug.debuggable):
     def outReceived(self, newStdout):
         """ Executes when we receive some STDOUT """
         self.printDebug("[->]\toutReceived()")
-        self.printDebug("\tdata_received=[%s]"%(repr(newStdout)))
-        self.stdout = self.stdout + repr(newStdout)
+        self.printDebug("\tdata_received=[%s]"%(repr(newStdout.decode())))
+        self.stdout = self.stdout + repr(newStdout.decode())
         self.printDebug("[<-]\toutReceived()")
 
 
@@ -149,7 +149,7 @@ class processHandlerBase(protocol.ProcessProtocol, libdebug.debuggable):
     def errReceived(self, newStderr):
         """ Executes when we receive some STDERR """
         self.printDebug("[->]\terrReceived")
-        self.stderr = self.stderr + repr(newStderr)
+        self.stderr = self.stderr + repr(newStderr.decode())
         self.printDebug("[<-]\terrReceived")
         
 
