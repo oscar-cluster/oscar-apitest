@@ -5,7 +5,6 @@ build-backend = "setuptools.build_meta"
 [project]
 dynamic = ["version"]
 name = "apitest"
-# version = "1.0.3" # We're using dynamic
 description = "APItest Testing Framework"
 readme = "README.md"
 requires-python = ">=3"

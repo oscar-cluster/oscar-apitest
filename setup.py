@@ -38,7 +38,7 @@ if 'sep' not in os.path.__dict__:
 #
 #####
 __author__   = "William McLendon"
-__version__  = "1.0.3"
+__version__  = "1.0.4"
 
 #####
 #
