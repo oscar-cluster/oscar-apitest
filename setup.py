@@ -77,7 +77,7 @@ doc_dir = ""
 doc_dir = "share/doc/apitest/"
 #doc_dir = "/usr/share/doc/apitest/"
 
-data_file_list.append( (doc_dir, ['README.html', 'doc/APItest-userguide-1_0.pdf']))
+data_file_list.append( (doc_dir, ['README.md', 'doc/APItest-userguide-1_0.pdf']))
 
 data_file_list.append( (doc_dir+"examples",
                         ['samples/apitest_test.apb',
