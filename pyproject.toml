@@ -9,6 +9,7 @@ name = "apitest"
 description = "APItest Testing Framework"
 readme = "README.md"
 requires-python = ">=3"
+license = "LGPL-2.1-or-later"
 #license-files = [ "AUTHORS", "COPYING", "doc/COPYING.LGPLv2.1" ]
 keywords = [ "API", "testing", "framework" ]
 authors = [
@@ -32,7 +33,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Intended Audience :: Software Testers",
     "Intended Audience :: Managers",
-    "License :: LGPL-2.1-or-later",
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent"
 ]
