@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name = "apitest"
+# version = "1.0.3" # We're using dynamic
+description = "APItest Testing Framework"
+readme = "README.md"
+requires-python = ">=3"
+#license-files = [ "AUTHORS", "COPYING", "doc/COPYING.LGPLv2.1" ]
+keywords = [ "API", "testing", "framework" ]
+authors = [
+    { name = "William McLendon", email = "wcmclen@sandia.gov" },
+    { name = "Olivier Lahaye", email = "olivier.lahaye@cea.fr" },
+    { name = "DongInn Kim", email = "dikim@cs.indiana.edu" }
+]
+maintainers = [
+    { name = "Olivier Lahaye", email = "olivier.lahaye@cea.fr" }
+]
+dependencies = [
+    "zope_interface",
+    "twisted_core",
+    "twisted_web",
+    "elementtree"
+]
+classifiers = [
+    "Development Status :: 1.0",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Software Testers",
+    "Intended Audience :: Managers",
+    "License :: LGPL-2.1-or-later",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
+]
+[project.urls]
+Homepage = "https://github.com/oscar-cluster/oscar-apitest"
+Repository = "https://github.com/oscar-cluster/oscar-apitest.git"
+"Bug Tracker" = "https://github.com/oscar-cluster/oscar-apitest/issues"
+Documentation = "https://github.com/oscar-cluster/oscar-apitest/blob/master/doc/APItest-userguide-1_0.pdf"
+hangelog = "https://github.com/oscar-cluster/oscar-apitest/blob/master/ChangeLog"
+
+[project.scripts]
+apitest = "apitest"
+
+[tool.setuptools]
+packages = { find = { where = ["."] } }  # Équivalent à find_packages()
