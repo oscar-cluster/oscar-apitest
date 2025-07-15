@@ -286,12 +286,12 @@ class www_process_html(resource.Resource, libdebug.debuggable):
         fileList = []
         # Build list of files to execute.
         for k in list(request.args.keys()):
-            testFileRE = re.compile('.*(\.apt)$')
+            testFileRE = re.compile(r'.*(\.apt)$')
             if testFileRE.match(request.args[k][0]):
                 self.WB.workList.put(request.args[k][0])
                 
         for k in list(request.args.keys()):
-            testFileRE = re.compile('.*(\.apb)$')
+            testFileRE = re.compile(r'.*(\.apb)$')
             if testFileRE.match(request.args[k][0]):
                 self.WB.workList.put(request.args[k][0])
                 

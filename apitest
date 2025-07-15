@@ -281,8 +281,8 @@ class APItest(libdebug.debuggable):
                     if not libapitest.makeOutputDir(self.WB, runID):
                         self.options["transient"]=1
                         
-                testRE = re.compile('.*(\.apt)$')
-                batchRE= re.compile('.*(\.apb)$')
+                testRE = re.compile(r'.*(\.apt)$')
+                batchRE= re.compile(r'.*(\.apb)$')
                 if( testRE.match(self.options['file']) or \
                             batchRE.match(self.options['file'])):
                     
