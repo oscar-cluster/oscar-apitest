@@ -2,32 +2,33 @@
 
 ## Installing APItest
 
-Please refer to [INSTALL.html](INSTALL.html) for installation
+Please refer to [INSTALL.md](INSTALL.md) for installation
 instructions.
 
 ## Running APItest
 
 This code is currently in development, but we do have the shell and
-command tests working.  
+command tests working.
   
-To run apitest type the following:  
+To run apitest type the following:
   
 `**$ apitest httpd**`
   
-This will start apitest as an HTTP daemon on your local machine.  
-To use apitest, direct a web browser to:  
+This will start apitest as an HTTP daemon on your local machine.
+To use apitest, direct a web browser to:
   
 <http://localhost:2112/index.html>
 
 ## Installation
 
-APItest can be installed using the Python setup script that is
-provided.  
+APItest can be installed using the pyproject.toml that is
+provided.
   
-`$ python setup.py install`
-  
-should be sufficient to install APItest onto a unix machine.  
-We also have an RPM distribution available.
+`$ python3 -m build --wheel; python3 -m pip install`
+
+should be sufficient to install APItest onto a unix machine.
+There is also have an RPM and DEB packages availables.
+See [INSTALL.md](INSTALL.md) for package build instructions.
 
 ## Command Line Help
 
@@ -58,4 +59,5 @@ The destination directories of the default APItest installation are:
 ## Questions & Comments
 
 Help make APItest better... please send questions and comments to
-[William McLendon](=%22mailto::wcmclen@sandia.gov%22)
+apitest [issues](https://github.com/oscar-cluster/oscar-apitest/issues)
+Or [William McLendon](=%22mailto::wcmclen@sandia.gov%22)
