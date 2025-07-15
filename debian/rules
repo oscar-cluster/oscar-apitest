@@ -6,7 +6,7 @@ export PYBUILD_NAME=apitest
 	dh $@ --with python3 --buildsystem=pybuild
 
 dh_auto_install:
-	install -d -m 755 $(CURDIR)/debian/python3-apitest/usr/share/doc/python3-apitest/doc
-	install -d -m 755 $(CURDIR)/debian/python3-apitest/usr/share/doc/python3-apitest/samples
-	find doc -type f -exec install -p -m 644 {} $(CURDIR)/debian/python3-apitest/usr/share/doc/python3-apitest/{} \;
-	find samples -type f -exec install -p -m 644 {} $(CURDIR)/debian/python3-apitest/usr/share/doc/python3-apitest/{} \;
+	install -d -m 755 $(CURDIR)/debian/apitest/usr/share/doc/apitest/doc
+	install -d -m 755 $(CURDIR)/debian/apitest/usr/share/doc/apitest/samples
+	find doc -type f -exec install -p -m 644 {} $(CURDIR)/debian/apitest/usr/share/doc/apitest/{} \;
+	find samples -type f -exec install -p -m 644 {} $(CURDIR)/debian/apitest/usr/share/doc/apitest/{} \;
