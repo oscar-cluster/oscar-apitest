@@ -1,6 +1,7 @@
 1.0.5:
     * Use pyproject.toml and python -m build instead of deprecated setup.py
 	build.
+	* Add check interface to rpm and deb package building
 
 1.0.4:
     * Fix python 3 port

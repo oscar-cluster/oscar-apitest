@@ -8,14 +8,21 @@ downloading.
 
 *Required packages for APItest*
 
-- Python 3.2 or higher [http://www.python.org](http://www.python.org)
-- Twisted 2.0 [http://www.twistedmatrix.com](http://www.twistedmatrix.com/products/download)
+- Python 3.6 or higher [http://www.python.org](http://www.python.org)
+- Twisted >= 18.9.0 [http://www.twistedmatrix.com](http://www.twistedmatrix.com/products/download)
 - TwistedWeb [http://www.twistedmatrix.com](http://www.twistedmatrix.com/products/download)
+- zope.interface >= 5.0 [https://pypi.org/project/zope.interface/] (https://pypi.org/project/zope.interface/)
 - ElementTree [http://www.effbot.org](http://www.effbot.org)
 
 ## Building and Installing
+`$ python3 -m build --wheel; python3 -m pip install --prefix=<installation path>`
 
-`$ setup.py install --prefix=installation path[ --install-lib=lib installation path]`
+## Building rpm package (package check included):
+`$ python3 -m build --sdist ; rpmbuild -tb dist/apitest-*.tar.gz`
+
+## Building deb package (with package check):
+`$ dpkg-buildpackage -us -uc`
+`$ autopkgtest ../apitest_*.deb -- null`
 
 ## Executing APItest
 
