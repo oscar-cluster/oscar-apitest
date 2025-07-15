@@ -49,8 +49,7 @@ The destination directories of the default APItest installation are:
 -   **/usr/bin** - location of the *apitest* execution script.
 -   **/usr/share/doc/apitest** - Documentation & example scripts.
 -   **/usr/lib/python{py_vers}/site-packages/libapitest** - libapitest
--   [User Guide
-    (PDF)](file:///usr/share/doc/apitest/APItest-userguide-1_0.pdf)
+-   [User Guide (PDF) /doc/APItest-userguide-1\_0.pdf)](https://github.com/oscar-cluster/oscar-apitest/blob/master/doc/APItest-userguide-1_0.pdf)
 
   
 
