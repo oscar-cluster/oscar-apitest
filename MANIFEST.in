@@ -1,0 +1,10 @@
+# MANIFEST.in
+include AUTHORS
+include COPYING
+include ChangeLog
+include *.md
+include apitest.spec
+recursive-include debian *
+recursive-include doc *
+recursive-include samples *
+recursive-include libapitest *.py

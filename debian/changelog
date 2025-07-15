@@ -1,4 +1,10 @@
-apitest (1.0.4-1) hardy; urgency=low
+apitest (1.0.5-1) unstable; urgency=medium
+
+  * Move from setup.py to pyproject.toml
+
+ -- Olivier Lahaye <olivier.lahaye@cea.fr>  Tue, 15 Jul 2025 12:07:27 +0100
+
+apitest (1.0.4-1) unstable; urgency=medium
 
   * Fix python 3 port.
 

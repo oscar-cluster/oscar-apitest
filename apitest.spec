@@ -1,15 +1,11 @@
 %define name apitest
-%define version 1.0.4
+%define version 1.0.5
 %define release 1
 #define _unpackaged_files_terminate_build 0
-#define is_suse %(test -f /etc/SuSE-release && echo 1 || echo 0)
 %define is_suse %(grep -E "(suse)" /etc/os-release > /dev/null 2>&1 && echo 1 || echo 0)
 
 
-#{expand:%%define py_ver %(python -V 2>&1| awk '{print $2}')}
-#{expand:%%define py_libver %(python -V 2>&1| awk '{print $2}'|cut -d. -f1-2)}
-
-Summary: A test driver application. 
+Summary: A test driver application.
 Name: %{name}
 Version: %{version}
 Release: %{release}%{?dist}
@@ -21,60 +17,57 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 # Architecture
 BuildArch: noarch
 
-%if 0%{?fedora} >= 16 || 0%{?rhel} >= 6
-Requires:	python3-twisted
-BuildRequires:	python3-twisted
+%if 0%{?is_suse}
+BuildRequires: python3-Twisted >= 18.9.0
+BuildRequires: python3-zope.interface >= 5.0
+Requires: python3-Twisted >= 18.9.0
+Requires: python3-zope.interface >= 5.0
+%else
+BuildRequires: python3-twisted >= 18.9.0
+BuildRequires: python3-zope-interface >= 5.0
+Requires: python3-twisted >= 18.9.0
+Requires: python3-zope-interface >= 5.0
 %endif
-%if 0%{?is_suse}%{?is_opensuse}
-Requires:	python3-Twisted
-BuildRequires:	python3-Twisted
-%endif
-Requires: python3 >= 3.4
-BuildRequires: python3 >= 3.4
+
+Requires:       python3 >= 3.4
+Requires:       python3-zope-interface
+BuildRequires:  python3 >= 3.4
+BuildRequires:  python3-wheel
+BuildRequires:  python3-setuptools >= 61.0
+BuildRequires:  python3-setuptools-wheel >= 61.0
 
 
 %description
 APItest version %{version}.
-A test driver application. 
+A test driver application.
 
-
-##########
-# PREP
-##########
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
-echo "==========[ BUILD ]===================================="
-echo "python%{python3_version}"
-echo "buildroot=%{buildroot}"
-
+%{__python3} -m build --wheel
 
 %install
-echo "==========[ INSTALL ]=================================="
-echo %{buildroot}
-%if 0%{?is_suse}%{?is_opensuse}
-echo "Patching doc_dir for SuSE in setup.py"
-sed -i -e 's|doc_dir = "share/doc/apitest/"|doc_dir = "share/doc/packages/apitest/"|g' setup.py
-%endif
-#define doc_prefix /usr/share/doc/apitest
-%{__python3} setup.py install --no-compile --prefix=%{buildroot}%{_prefix}/ --install-lib=%{buildroot}%{python3_sitelib}
-###--install-data=#{buildroot}/#{doc_prefix}
-
+%{__python3} -m pip install \
+  --no-compile \
+  --prefix=%{buildroot}%{_prefix} \
+  --no-deps \
+  dist/apitest-%{version}-*.whl
 
 %files
-%defattr(-,root,root)
-%doc AUTHORS ChangeLog doc/COPYING.LGPLv2.1
+%doc AUTHORS COPYING ChangeLog doc/*
+%doc samples
 %{python3_sitelib}/*
-%{_docdir}/*
 %{_bindir}/*
-
 
 %clean
 echo "cleaning $RPM_BUILD_ROOT"
 rm -rf $RPM_BUILD_ROOT
 
 %changelog
+* Tue Jul 15 2025    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.5-1
+- don't use deprecated setup.py build.
+
 * Mon Nov 08 2021    Olivier Lahaye <olivier.lahaye@cea.fr> 1.0.4-1
 - Fix python3 port (2to3 forgot to replace the file() builtin).
 
@@ -105,4 +98,4 @@ rm -rf $RPM_BUILD_ROOT
 * Thu Jan 12 2006    Thomas Naughton  <naughtont@ornl.gov> 1.0.0-12
 - (1.0.0-12) Removed unused profile.d portions.
 - Changed to use (what appears) more standard 'python-twisted', doesn't
-  cover case where it is v2.0 and twisted-web is seperate, but should be ok. 
+  cover case where it is v2.0 and twisted-web is seperate, but should be ok.
