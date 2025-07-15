@@ -1,12 +1,14 @@
 Source: apitest
-Section: oscar
+Section: python
 Priority: optional
 Maintainer: Olivier Lahaye <olivier.lahaye@cea.fr>
 Build-Depends: python3-all, dh-python, python3-twisted, python3-setuptools, python3-wheel, python3-zope.interface, debhelper (>= 12.0.0)
-Standards-Version: 4.2.1
+Standards-Version: 4.6.2
+Homepage: https://github.com/oscar-cluster/oscar-apitest
+Testsuite: autopkgtest
 
 Package: apitest
 Architecture: all
-Depends: ${misc:Depends} ${python3:Depends}
-Description: APITest
- APITest package for OSCAR.
+Depends: ${misc:Depends}, ${python3:Depends}, python3-zope.interface (>= 5.0), python3-twisted (>= 18.9.0)
+Description: APItest Testing Framework
+ APItest is a test driver application for API and HTTP integration testing.

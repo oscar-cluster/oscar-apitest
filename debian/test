@@ -1,0 +1,7 @@
+#!/bin/sh
+set -e
+# Configurer PYTHONPATH pour inclure libapitest
+export PYTHONPATH=/usr/lib/python3/dist-packages:$PYTHONPATH
+# Exécuter apitest avec le fichier de test
+apitest -f /usr/share/doc/apitest/samples/batch/bTest_4.apb
+
