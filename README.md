@@ -12,7 +12,7 @@ command tests working.
   
 To run apitest type the following:
   
-`**$ apitest httpd**`
+`$ apitest httpd`
   
 This will start apitest as an HTTP daemon on your local machine.
 To use apitest, direct a web browser to:
