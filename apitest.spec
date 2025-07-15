@@ -29,9 +29,9 @@ Requires: python3-twisted >= 18.9.0
 Requires: python3-zope-interface >= 5.0
 %endif
 
-Requires:       python3 >= 3.4
+Requires:       python3 >= 3.6
 Requires:       python3-zope-interface
-BuildRequires:  python3 >= 3.4
+BuildRequires:  python3 >= 3.6
 BuildRequires:  python3-wheel
 BuildRequires:  python3-setuptools >= 61.0
 BuildRequires:  python3-setuptools-wheel >= 61.0
