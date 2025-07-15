@@ -12,8 +12,8 @@
         maxPctMatch="0"
         onMismatch="CONTINUE">
   
-    <command interpreter="python2" wdir="/tmp">
-#!/usr/bin/env python2
+    <command interpreter="python3" wdir="/tmp">
+#!/usr/bin/env python3
 import os
 import sys
 for i in range(2):

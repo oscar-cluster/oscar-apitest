@@ -27,7 +27,7 @@
 Sample install test script.  Checks the default install
 locations for the RPM install:
 
-/usr/lib/python2.2/site-packages/libapitest/*.py
+/usr/lib/python*/site-packages/libapitest/*.py
 /usr/local/apitest/apitest
 
 The embedded script will pass given the following conditions:
@@ -43,7 +43,7 @@ STATUS is 0
 
 
 <!-- command -->
-<command interpreter="python">
+<command interpreter="python3">
 import sys, os, os.path
 
 if not os.path.__dict__.has_key('sep'):
