@@ -31,10 +31,13 @@ Requires: python3-zope-interface >= 5.0
 
 Requires:       python3 >= 3.6
 Requires:       python3-zope-interface
-BuildRequires:  python3 >= 3.6
+BuildRequires:  python3-devel >= 3.6
+%if 0%{?rhel} >= 8
+BuildRequires:	python3-build
+%endif
 BuildRequires:  python3-wheel
-BuildRequires:  python3-setuptools >= 61.0
-BuildRequires:  python3-setuptools-wheel >= 61.0
+BuildRequires:  python3-setuptools >= 39.2.0
+BuildRequires:  python3-setuptools-wheel >= 39.2.0
 
 
 %description
